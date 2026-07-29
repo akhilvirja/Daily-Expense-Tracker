@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +8,32 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ============================================
+// Module 1: Account & Ledger Management
+// ============================================
+
+/// Represents a bank account, cash reserve, or wallet.
+/// Each account tracks its own running balance.
+model Account {
+  id             String   @id @default(cuid())
+  name           String   @unique                        // e.g., "Paresh - HDFC", "Cash - Home"
+  type           String   @default("bank")               // "bank", "cash", "wallet"
+  bankName       String?                                 // Optional: "HDFC", "ICICI"
+  holderName     String?                                 // Optional: "Paresh", "Harsha"
+  initialBalance Float    @default(0)                    // Starting balance
+  currentBalance Float    @default(0)                    // Computed: initialBalance + credits - debits
+  description    String?                                 // Optional notes
+  isActive       Boolean  @default(true)                 // Soft delete flag
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations (will be added in later phases)
+  // transactions Transaction[]
+  // billPayments Bill[]
+
+  @@index([isActive])
+  @@map("accounts")
 }

@@ -702,124 +702,110 @@ graph LR
 ### 📌 Phase 0: Project Foundation & Configuration
 > **Estimated Effort:** 1 session
 
-| Step | Task | Details |
-|------|------|---------|
-| 0.1 | Backend Environment Setup | Configure `.env` with `DATABASE_URL`, `PORT`. Initialize Prisma client. |
-| 0.2 | Express Server Setup | Set up `index.js` with Express app, CORS, JSON parser, route mounting, error handler, and DB connection call. |
-| 0.3 | Global Middleware | Create `errorHandler.js` (catches all unhandled errors) and `validate.js` (request body validation). |
-| 0.4 | Frontend Environment Setup | Configure `.env` with `VITE_API_URL`. Set up Axios instance with base URL and interceptors. |
-| 0.5 | Frontend Routing | Install `react-router-dom`. Create `App.tsx` with route definitions and `MainLayout` wrapper. |
-| 0.6 | Design System | Set up TailwindCSS theme tokens in `index.css` — color palette, fonts, component base styles. |
-| 0.7 | Base UI Components | Build reusable `Button`, `Card`, `Modal`, `Input`, `Select`, `Table`, `Badge`, `Toast` components. |
+- [x] **0.1 Backend Environment Setup:** Configure `.env` with `DATABASE_URL`, `PORT`. Initialize Prisma client.
+- [x] **0.2 Express Server Setup:** Set up `index.js` with Express app, CORS, JSON parser, route mounting, error handler, and DB connection call.
+- [x] **0.3 Global Middleware:** Create `errorHandler.js` (catches all unhandled errors) and `validate.js` (request body validation).
+- [x] **0.4 Frontend Environment Setup:** Configure `.env` with `VITE_API_URL`. Set up Axios instance with base URL and interceptors.
+- [x] **0.5 Frontend Routing:** Install `react-router-dom`. Create `App.tsx` with route definitions and `MainLayout` wrapper.
+- [x] **0.6 Design System:** Set up TailwindCSS theme tokens in `index.css` — color palette, fonts, component base styles.
+- [x] **0.7 Base UI Components:** Build reusable `Button`, `Card`, `Modal`, `Input`, `Select`, `Table`, `Badge`, `Toast` components.
 
 ---
 
 ### 📌 Phase 1: Module 1 — Account & Ledger Management
 > **Estimated Effort:** 1-2 sessions
 
-| Step | Task | Layer |
-|------|------|-------|
-| 1.1 | Define `Account` model in `schema.prisma` and migrate | Backend — Prisma Schema |
-| 1.2 | Create `accountController.js` with CRUD operations | Backend — Controller |
-| 1.3 | Create `accountRoutes.js` and mount on Express | Backend — Routes |
-| 1.4 | Create `accountApi.ts` with Axios calls | Frontend — API |
-| 1.5 | Build `AccountForm.tsx` (create/edit modal) | Frontend — Component |
-| 1.6 | Build `AccountCard.tsx` (balance display card) | Frontend — Component |
-| 1.7 | Build `AccountList.tsx` (grid of account cards) | Frontend — Component |
-| 1.8 | Build `AccountsPage.tsx` (assembles all account components) | Frontend — Page |
-| 1.9 | Test: Create accounts, verify display, check balance shows 0 initially | Verification |
+- [x] **1.1 Define `Account` model in `schema.prisma` and migrate:** Backend — Prisma Schema
+- [x] **1.2 Create `accountController.js` with CRUD operations:** Backend — Controller
+- [x] **1.3 Create `accountRoutes.js` and mount on Express:** Backend — Routes
+- [x] **1.4 Create `accountApi.ts` with Axios calls:** Frontend — API
+- [x] **1.5 Build `AccountForm.tsx` (create/edit modal):** Frontend — Component
+- [x] **1.6 Build `AccountCard.tsx` (balance display card):** Frontend — Component
+- [x] **1.7 Build `AccountList.tsx` (grid of account cards):** Frontend — Component
+- [x] **1.8 Build `AccountsPage.tsx` (assembles all account components):** Frontend — Page
+- [ ] **1.9 Test:** Create accounts, verify display, check balance shows 0 initially (Verification)
 
 ---
 
 ### 📌 Phase 2: Module 2 — Category & Transaction Management
 > **Estimated Effort:** 2-3 sessions
 
-| Step | Task | Layer |
-|------|------|-------|
-| 2.1 | Define `Category` model in `schema.prisma` | Backend — Prisma Schema |
-| 2.2 | Create Category CRUD controller + routes | Backend — Controller/Routes |
-| 2.3 | Define `Transaction` model in `schema.prisma` with account & category refs | Backend — Prisma Schema |
-| 2.4 | Create `transactionController.js` — CRUD with **balance recalculation logic** | Backend — Controller |
-| 2.5 | Implement balance update service: on create/update/delete transaction, recalculate `Account.currentBalance` | Backend — Service |
-| 2.6 | Create transaction routes with query param filtering | Backend — Routes |
-| 2.7 | Seed default categories (Food, Transport, Salary, Utilities, etc.) | Backend — Seed Script |
-| 2.8 | Create `categoryApi.ts` and `transactionApi.ts` | Frontend — API |
-| 2.9 | Build `TransactionForm.tsx` with mandatory account dropdown | Frontend — Component |
-| 2.10 | Build `TransactionList.tsx` with color-coded amounts | Frontend — Component |
-| 2.11 | Build `TransactionFilters.tsx` (type, account, category, date range) | Frontend — Component |
-| 2.12 | Build `TransactionsPage.tsx` | Frontend — Page |
-| 2.13 | Test: Add credit to "Paresh - HDFC" → verify balance increases. Add debit → verify balance decreases. | Verification |
+- [ ] **2.1 Define `Category` model in `schema.prisma`:** Backend — Prisma Schema
+- [ ] **2.2 Create Category CRUD controller + routes:** Backend — Controller/Routes
+- [ ] **2.3 Define `Transaction` model in `schema.prisma` with account & category refs:** Backend — Prisma Schema
+- [ ] **2.4 Create `transactionController.js` — CRUD with **balance recalculation logic**:** Backend — Controller
+- [ ] **2.5 Implement balance update service:** on create/update/delete transaction, recalculate `Account.currentBalance` (Backend — Service)
+- [ ] **2.6 Create transaction routes with query param filtering:** Backend — Routes
+- [ ] **2.7 Seed default categories:** (Food, Transport, Salary, Utilities, etc.) (Backend — Seed Script)
+- [ ] **2.8 Create `categoryApi.ts` and `transactionApi.ts`:** Frontend — API
+- [ ] **2.9 Build `TransactionForm.tsx` with mandatory account dropdown:** Frontend — Component
+- [ ] **2.10 Build `TransactionList.tsx` with color-coded amounts:** Frontend — Component
+- [ ] **2.11 Build `TransactionFilters.tsx` (type, account, category, date range):** Frontend — Component
+- [ ] **2.12 Build `TransactionsPage.tsx`:** Frontend — Page
+- [ ] **2.13 Test:** Add credit to "Paresh - HDFC" → verify balance increases. Add debit → verify balance decreases. (Verification)
 
 ---
 
 ### 📌 Phase 3: Module 3 — Dynamic Item & Daily Tracking
 > **Estimated Effort:** 2-3 sessions
 
-| Step | Task | Layer |
-|------|------|-------|
-| 3.1 | Define `DynamicItem` model in `schema.prisma` | Backend — Prisma Schema |
-| 3.2 | Create DynamicItem CRUD controller + routes | Backend — Controller/Routes |
-| 3.3 | Define `DailyLog` model in `schema.prisma` | Backend — Prisma Schema |
-| 3.4 | Create `dailyLogController.js` with upsert and bulk-entry endpoints | Backend — Controller |
-| 3.5 | Create daily log routes including calendar data endpoint | Backend — Routes |
-| 3.6 | Create `dynamicItemApi.ts` and `dailyLogApi.ts` | Frontend — API |
-| 3.7 | Build `DynamicItemForm.tsx` (create/edit item) | Frontend — Component |
-| 3.8 | Build `DailyLogGrid.tsx` — Calendar/grid view with editable cells | Frontend — Component |
-| 3.9 | Build `QuickEntryRow.tsx` — Quick log for today's items | Frontend — Component |
-| 3.10 | Build `DailyTrackerPage.tsx` | Frontend — Page |
-| 3.11 | Test: Create "Milk" item → log 2L for July 1, 1.5L for July 2 → verify grid display | Verification |
+- [ ] **3.1 Define `DynamicItem` model in `schema.prisma`:** Backend — Prisma Schema
+- [ ] **3.2 Create DynamicItem CRUD controller + routes:** Backend — Controller/Routes
+- [ ] **3.3 Define `DailyLog` model in `schema.prisma`:** Backend — Prisma Schema
+- [ ] **3.4 Create `dailyLogController.js` with upsert and bulk-entry endpoints:** Backend — Controller
+- [ ] **3.5 Create daily log routes including calendar data endpoint:** Backend — Routes
+- [ ] **3.6 Create `dynamicItemApi.ts` and `dailyLogApi.ts`:** Frontend — API
+- [ ] **3.7 Build `DynamicItemForm.tsx` (create/edit item):** Frontend — Component
+- [ ] **3.8 Build `DailyLogGrid.tsx` — Calendar/grid view with editable cells:** Frontend — Component
+- [ ] **3.9 Build `QuickEntryRow.tsx` — Quick log for today's items:** Frontend — Component
+- [ ] **3.10 Build `DailyTrackerPage.tsx`:** Frontend — Page
+- [ ] **3.11 Test:** Create "Milk" item → log 2L for July 1, 1.5L for July 2 → verify grid display (Verification)
 
 ---
 
 ### 📌 Phase 4: Module 4 — Automated Billing & Payment
 > **Estimated Effort:** 2-3 sessions
 
-| Step | Task | Layer |
-|------|------|-------|
-| 4.1 | Define `Bill` model in `schema.prisma` | Backend — Prisma Schema |
-| 4.2 | Create `billingService.js` — aggregation logic (sum daily logs, calculate total) | Backend — Service |
-| 4.3 | Create bill generation endpoint (preview + confirm) | Backend — Controller |
-| 4.4 | Create bill payment endpoint — **atomic operation:** update bill status + create debit transaction + update account balance | Backend — Controller |
-| 4.5 | Create bill routes | Backend — Routes |
-| 4.6 | Create `billApi.ts` | Frontend — API |
-| 4.7 | Build `BillGenerator.tsx` (item + date range selector + preview) | Frontend — Component |
-| 4.8 | Build `BillCard.tsx` (bill summary with status badge) | Frontend — Component |
-| 4.9 | Build `PaymentModal.tsx` (account selector for payment) | Frontend — Component |
-| 4.10 | Build `BillList.tsx` (filterable list of generated bills) | Frontend — Component |
-| 4.11 | Build `BillingPage.tsx` | Frontend — Page |
-| 4.12 | Test: Generate bill for Milk (July 1-31) → verify total → pay from "Paresh - HDFC" → verify bill status = Paid, debit transaction created, account balance updated | Verification |
+- [ ] **4.1 Define `Bill` model in `schema.prisma`:** Backend — Prisma Schema
+- [ ] **4.2 Create `billingService.js` — aggregation logic (sum daily logs, calculate total):** Backend — Service
+- [ ] **4.3 Create bill generation endpoint (preview + confirm):** Backend — Controller
+- [ ] **4.4 Create bill payment endpoint:** **atomic operation:** update bill status + create debit transaction + update account balance (Backend — Controller)
+- [ ] **4.5 Create bill routes:** Backend — Routes
+- [ ] **4.6 Create `billApi.ts`:** Frontend — API
+- [ ] **4.7 Build `BillGenerator.tsx` (item + date range selector + preview):** Frontend — Component
+- [ ] **4.8 Build `BillCard.tsx` (bill summary with status badge):** Frontend — Component
+- [ ] **4.9 Build `PaymentModal.tsx` (account selector for payment):** Frontend — Component
+- [ ] **4.10 Build `BillList.tsx` (filterable list of generated bills):** Frontend — Component
+- [ ] **4.11 Build `BillingPage.tsx`:** Frontend — Page
+- [ ] **4.12 Test:** Generate bill for Milk (July 1-31) → verify total → pay from "Paresh - HDFC" → verify bill status = Paid, debit transaction created, account balance updated (Verification)
 
 ---
 
 ### 📌 Phase 5: Module 5 — Dashboard & Reporting
 > **Estimated Effort:** 1-2 sessions
 
-| Step | Task | Layer |
-|------|------|-------|
-| 5.1 | Create `reportService.js` — aggregation pipelines for summaries | Backend — Service |
-| 5.2 | Create report endpoints (summary, by-category, by-account, by-period) | Backend — Controller/Routes |
-| 5.3 | Build `SummaryCards.tsx` (total income, expenses, net, pending bills) | Frontend — Component |
-| 5.4 | Build `FilterPanel.tsx` (advanced multi-dimension filters) | Frontend — Component |
-| 5.5 | Build `ChartView.tsx` (bar, line, pie charts using a lightweight chart library) | Frontend — Component |
-| 5.6 | Build `Dashboard.tsx` (summary + recent transactions + account overview) | Frontend — Page |
-| 5.7 | Build `ReportsPage.tsx` (filters + charts + data table) | Frontend — Page |
-| 5.8 | Test: Verify dashboard shows correct totals. Apply filters → verify data updates. | Verification |
+- [ ] **5.1 Create `reportService.js` — aggregation pipelines for summaries:** Backend — Service
+- [ ] **5.2 Create report endpoints (summary, by-category, by-account, by-period):** Backend — Controller/Routes
+- [ ] **5.3 Build `SummaryCards.tsx` (total income, expenses, net, pending bills):** Frontend — Component
+- [ ] **5.4 Build `FilterPanel.tsx` (advanced multi-dimension filters):** Frontend — Component
+- [ ] **5.5 Build `ChartView.tsx` (bar, line, pie charts using a lightweight chart library):** Frontend — Component
+- [ ] **5.6 Build `Dashboard.tsx` (summary + recent transactions + account overview):** Frontend — Page
+- [ ] **5.7 Build `ReportsPage.tsx` (filters + charts + data table):** Frontend — Page
+- [ ] **5.8 Test:** Verify dashboard shows correct totals. Apply filters → verify data updates. (Verification)
 
 ---
 
 ### 📌 Phase 6: Polish & Production Readiness
 > **Estimated Effort:** 1-2 sessions
 
-| Step | Task | Details |
-|------|------|---------|
-| 6.1 | Error Handling | Toast notifications for all API errors. Loading states and skeletons. |
-| 6.2 | Form Validation | Client-side validation on all forms. Server-side validation with meaningful error messages. |
-| 6.3 | Responsive Design | Ensure all pages work on mobile, tablet, and desktop. Collapsible sidebar on mobile. |
-| 6.4 | Animations & Micro-interactions | Page transitions, card hover effects, button press animations, modal animations. |
-| 6.5 | Dark Mode | Toggle between light and dark themes. |
-| 6.6 | Data Seeding | Create a seed script with sample accounts, categories, items, logs, and transactions for demo. |
-| 6.7 | Performance | Pagination on all list views. Debounced search/filter inputs. Lazy loading for charts. |
-| 6.8 | Final Testing | End-to-end flow testing across all modules. |
+- [ ] **6.1 Error Handling:** Toast notifications for all API errors. Loading states and skeletons.
+- [ ] **6.2 Form Validation:** Client-side validation on all forms. Server-side validation with meaningful error messages.
+- [ ] **6.3 Responsive Design:** Ensure all pages work on mobile, tablet, and desktop. Collapsible sidebar on mobile.
+- [ ] **6.4 Animations & Micro-interactions:** Page transitions, card hover effects, button press animations, modal animations.
+- [ ] **6.5 Dark Mode:** Toggle between light and dark themes.
+- [ ] **6.6 Data Seeding:** Create a seed script with sample accounts, categories, items, logs, and transactions for demo.
+- [ ] **6.7 Performance:** Pagination on all list views. Debounced search/filter inputs. Lazy loading for charts.
+- [ ] **6.8 Final Testing:** End-to-end flow testing across all modules.
 
 ---
 
