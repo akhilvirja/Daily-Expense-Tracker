@@ -1,9 +1,9 @@
 # 🏗️ Master Plan — Daily Expense & Tracker Application
 
 > **Project:** Daily-Expense-Tracker  
-> **Tech Stack:** React 19 + TypeScript + TailwindCSS v4 (Frontend) | Express 5 + Node.js (Backend) | MongoDB + Mongoose 9 (Database)  
+> **Tech Stack:** React 19 + TypeScript + TailwindCSS v4 (Frontend) | Express 5 + Node.js (Backend) | Prisma ORM + Zod (Database & Validation)  
 > **Development Mandate:** AI-Assisted Development (Antigravity / LLM-powered workflows)  
-> **Date Created:** 29 July 2026
+> **Date Updated:** 29 July 2026
 
 ---
 
@@ -27,8 +27,8 @@
 | Layer | Status | Details |
 |-------|--------|---------|
 | **Frontend** | ✅ Scaffolded | Vite + React 19 + TypeScript + TailwindCSS v4. Empty `App.tsx`. |
-| **Backend** | ✅ Scaffolded | Express 5 + Mongoose 9. Empty `index.js`. Has utility helpers (`asyncHandler`, `response`, `statusCodes`, `statusMessages`). |
-| **Database** | ⬜ Not started | Mongoose is installed but no connection, models, or schema exist. |
+| **Backend** | ✅ Scaffolded | Express 5 + Prisma + Zod. Empty `index.js`. Has utility helpers (`asyncHandler`, `response`, `statusCodes`, `statusMessages`). |
+| **Database** | ⬜ Not started | Prisma is installed but no schema or models exist yet. |
 | **Routing** | ⬜ Not started | No React Router or Express routes configured. |
 | **Authentication** | ⬜ Not started | No auth layer exists (not in current scope). |
 
@@ -55,8 +55,8 @@ graph TB
         Routes["API Routes"]
         Controllers["Controllers"]
         Services["Service Layer"]
-        Models["Mongoose Models"]
-        Middleware["Middleware (CORS, Validation, Error Handler)"]
+        Models["Prisma Client"]
+        Middleware["Middleware (CORS, Validation with Zod, Error Handler)"]
     end
 
     subgraph Database["Database (MongoDB)"]
@@ -85,19 +85,17 @@ Daily-Expense-Tracker/
 │       ├── index.js                  # App entry, Express setup, DB connect
 │       ├── config/
 │       │   └── db.js                 # MongoDB connection logic
+│       │   └── db.js                 # Database connection logic
 │       ├── constants/
 │       │   ├── statusCodes.js        ✅ EXISTS
 │       │   └── statusMessages.js     ✅ EXISTS
 │       ├── middleware/
 │       │   ├── errorHandler.js       # Global error handler
 │       │   └── validate.js           # Request validation middleware
-│       ├── models/
-│       │   ├── Account.js            # Bank/Cash ledger accounts
-│       │   ├── Category.js           # Expense/Income categories
-│       │   ├── Transaction.js        # Credit/Debit transactions
-│       │   ├── DynamicItem.js        # User-created trackable items
-│       │   ├── DailyLog.js           # Daily quantity entries
-│       │   └── Bill.js               # Auto-generated bills
+│       ├── validations/
+│       │   └── schemas.js            # Zod validation schemas
+│       ├── prisma/
+│       │   └── schema.prisma         # Prisma schema definition
 │       ├── routes/
 │       │   ├── accountRoutes.js
 │       │   ├── categoryRoutes.js
@@ -706,7 +704,7 @@ graph LR
 
 | Step | Task | Details |
 |------|------|---------|
-| 0.1 | Backend Environment Setup | Configure `.env` with `MONGODB_URI`, `PORT`. Create `config/db.js` for MongoDB connection. |
+| 0.1 | Backend Environment Setup | Configure `.env` with `DATABASE_URL`, `PORT`. Initialize Prisma client. |
 | 0.2 | Express Server Setup | Set up `index.js` with Express app, CORS, JSON parser, route mounting, error handler, and DB connection call. |
 | 0.3 | Global Middleware | Create `errorHandler.js` (catches all unhandled errors) and `validate.js` (request body validation). |
 | 0.4 | Frontend Environment Setup | Configure `.env` with `VITE_API_URL`. Set up Axios instance with base URL and interceptors. |
@@ -721,7 +719,7 @@ graph LR
 
 | Step | Task | Layer |
 |------|------|-------|
-| 1.1 | Create `Account` Mongoose model with validation & indexes | Backend — Model |
+| 1.1 | Define `Account` model in `schema.prisma` and migrate | Backend — Prisma Schema |
 | 1.2 | Create `accountController.js` with CRUD operations | Backend — Controller |
 | 1.3 | Create `accountRoutes.js` and mount on Express | Backend — Routes |
 | 1.4 | Create `accountApi.ts` with Axios calls | Frontend — API |
@@ -738,9 +736,9 @@ graph LR
 
 | Step | Task | Layer |
 |------|------|-------|
-| 2.1 | Create `Category` model | Backend — Model |
+| 2.1 | Define `Category` model in `schema.prisma` | Backend — Prisma Schema |
 | 2.2 | Create Category CRUD controller + routes | Backend — Controller/Routes |
-| 2.3 | Create `Transaction` model with account & category refs | Backend — Model |
+| 2.3 | Define `Transaction` model in `schema.prisma` with account & category refs | Backend — Prisma Schema |
 | 2.4 | Create `transactionController.js` — CRUD with **balance recalculation logic** | Backend — Controller |
 | 2.5 | Implement balance update service: on create/update/delete transaction, recalculate `Account.currentBalance` | Backend — Service |
 | 2.6 | Create transaction routes with query param filtering | Backend — Routes |
@@ -759,9 +757,9 @@ graph LR
 
 | Step | Task | Layer |
 |------|------|-------|
-| 3.1 | Create `DynamicItem` model | Backend — Model |
+| 3.1 | Define `DynamicItem` model in `schema.prisma` | Backend — Prisma Schema |
 | 3.2 | Create DynamicItem CRUD controller + routes | Backend — Controller/Routes |
-| 3.3 | Create `DailyLog` model with unique compound index (item + date) | Backend — Model |
+| 3.3 | Define `DailyLog` model in `schema.prisma` | Backend — Prisma Schema |
 | 3.4 | Create `dailyLogController.js` with upsert and bulk-entry endpoints | Backend — Controller |
 | 3.5 | Create daily log routes including calendar data endpoint | Backend — Routes |
 | 3.6 | Create `dynamicItemApi.ts` and `dailyLogApi.ts` | Frontend — API |
@@ -778,7 +776,7 @@ graph LR
 
 | Step | Task | Layer |
 |------|------|-------|
-| 4.1 | Create `Bill` model with unique compound index (item + date range) | Backend — Model |
+| 4.1 | Define `Bill` model in `schema.prisma` | Backend — Prisma Schema |
 | 4.2 | Create `billingService.js` — aggregation logic (sum daily logs, calculate total) | Backend — Service |
 | 4.3 | Create bill generation endpoint (preview + confirm) | Backend — Controller |
 | 4.4 | Create bill payment endpoint — **atomic operation:** update bill status + create debit transaction + update account balance | Backend — Controller |
