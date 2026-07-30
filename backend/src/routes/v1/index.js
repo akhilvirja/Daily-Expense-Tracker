@@ -3,7 +3,8 @@ import { Router } from 'express';
 // Import all v1 route modules
 import authRoutes from './auth.routes.js';
 import accountRoutes from './account.routes.js';
-// Add future routes here, e.g. categoryRoutes, transactionRoutes
+import categoryRoutes from './category.routes.js';
+import transactionRoutes from './transaction.routes.js';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ const router = Router();
  */
 router.use('/auth', authRoutes);
 router.use('/accounts', accountRoutes);
-// router.use('/categories', categoryRoutes);
-// router.use('/transactions', transactionRoutes);
+router.use('/categories', categoryRoutes);
+router.use('/transactions', transactionRoutes);
 
 export default router;

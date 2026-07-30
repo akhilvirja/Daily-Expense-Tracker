@@ -19,11 +19,16 @@ export const AccountList: React.FC<AccountListProps> = ({
     // Loading skeleton
     if (isLoading) {
         return (
-            <div className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden animate-pulse">
-                <div className="h-12 bg-surface-container-low border-b border-outline-variant"></div>
+            <div className="w-full bg-white border border-slate-200 rounded-xl overflow-hidden">
+                {/* Header skeleton */}
+                <div className="h-12 bg-slate-50 border-b border-slate-200" />
+                {/* Row skeletons */}
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-16 border-b border-outline-variant last:border-b-0 bg-surface-container-lowest flex items-center px-4">
-                        <div className="h-4 bg-surface-container rounded w-1/4"></div>
+                    <div key={i} className="flex items-center px-6 py-5 border-b border-slate-100 last:border-b-0 animate-pulse">
+                        <div className="h-4 bg-slate-200 rounded w-1/4" />
+                        <div className="h-4 bg-slate-200 rounded w-16 ml-auto mr-8" />
+                        <div className="h-4 bg-slate-200 rounded w-20 mr-8" />
+                        <div className="h-4 bg-slate-200 rounded w-16" />
                     </div>
                 ))}
             </div>
@@ -33,66 +38,126 @@ export const AccountList: React.FC<AccountListProps> = ({
     // Empty state
     if (accounts.length === 0) {
         return (
-            <div className="text-center py-12 text-on-surface-variant bg-surface-container-lowest border border-outline-variant rounded-xl">
+            <div className="flex flex-col items-center justify-center py-16 bg-white border border-slate-200 rounded-xl">
                 <div className="text-5xl mb-4">🏦</div>
-                <h3 className="text-lg font-semibold text-on-surface mb-2">No accounts yet</h3>
-                <p className="text-sm">Create your first bank account or cash reserve to start tracking your finances.</p>
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">No accounts yet</h3>
+                <p className="text-sm text-slate-400 max-w-sm text-center">
+                    Create your first bank account or cash reserve to start tracking your finances.
+                </p>
             </div>
         );
     }
 
     return (
-        <div className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div className="w-full bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm whitespace-nowrap">
-                    <thead className="bg-[#F8FAFC] border-b border-outline-variant text-[#64748B] font-semibold text-xs tracking-wider">
-                        <tr>
-                            <th className="px-6 py-4 rounded-tl-xl uppercase">ACCOUNT NAME</th>
-                            <th className="px-6 py-4 uppercase">TYPE</th>
-                            <th className="px-6 py-4 uppercase">CURRENT BALANCE</th>
-                            <th className="px-6 py-4 uppercase">STATUS</th>
-                            <th className="px-6 py-4 rounded-tr-xl text-right uppercase">ACTIONS</th>
+                <table className="w-full text-left text-sm">
+                    {/* Table Header */}
+                    <thead>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Account Name
+                            </th>
+                            <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Type
+                            </th>
+                            <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Current Balance
+                            </th>
+                            <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">
+                                Actions
+                            </th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-outline-variant bg-white">
+
+                    {/* Table Body */}
+                    <tbody className="divide-y divide-slate-100">
                         {accounts.map((account, index) => (
-                            <tr key={account.id} className="hover:bg-slate-50 transition-colors" style={{ animation: `fadeInUp 0.3s ease-out ${index * 0.05}s both` }}>
-                                <td className="px-6 py-4 font-medium text-slate-800">
+                            <tr
+                                key={account.id}
+                                className="hover:bg-slate-50/70 transition-colors duration-150"
+                                style={{ animation: `fadeInUp 0.3s ease-out ${index * 0.05}s both` }}
+                            >
+                                {/* Account Name */}
+                                <td className="px-6 py-4 font-medium text-slate-800 whitespace-nowrap">
                                     {account.name}
                                 </td>
-                                <td className="px-6 py-4 text-slate-600">
+
+                                {/* Type */}
+                                <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
                                     {account.kind === 'bank' ? 'Bank' : 'Cash'}
                                 </td>
-                                <td className="px-6 py-4 font-bold text-slate-800">
+
+                                {/* Current Balance */}
+                                <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
                                     {new Intl.NumberFormat('en-IN', {
                                         style: 'currency',
                                         currency: 'INR',
                                         maximumFractionDigits: 0
                                     }).format(account.currentBalance)}
                                 </td>
-                                <td className="px-6 py-4">
-                                    <button 
+
+                                {/* Status — clickable badge to toggle active/inactive */}
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <button
                                         onClick={() => onToggleStatus(account)}
-                                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${account.isActive ? 'bg-[#5B5CEF]' : 'bg-slate-300'}`}
-                                    >
-                                        <span className="sr-only">Toggle status</span>
-                                        <span
-                                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                                account.isActive ? 'translate-x-6' : 'translate-x-1'
+                                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 cursor-pointer
+                                            ${account.isActive
+                                                ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                             }`}
+                                        title={`Click to ${account.isActive ? 'deactivate' : 'activate'}`}
+                                    >
+                                        <span
+                                            className={`inline-block w-1.5 h-1.5 rounded-full mr-1.5
+                                                ${account.isActive ? 'bg-emerald-500' : 'bg-slate-400'}`}
                                         />
+                                        {account.isActive ? 'Active' : 'Inactive'}
                                     </button>
                                 </td>
-                                <td className="px-6 py-4 text-right space-x-3 text-slate-400">
-                                    <button className="hover:text-slate-600 transition-colors" title="View">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                    </button>
-                                    <button onClick={() => onEdit(account)} className="hover:text-slate-600 transition-colors" title="Edit">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path d="m15 5 4 4"></path></svg>
-                                    </button>
-                                    <button onClick={() => onDelete(account)} className="hover:text-red-500 transition-colors" title="Delete">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                                    </button>
+
+                                {/* Actions — View, Edit, Delete */}
+                                <td className="px-6 py-4 whitespace-nowrap text-right">
+                                    <div className="inline-flex items-center gap-1">
+                                        {/* View */}
+                                        <button
+                                            className="p-2 text-slate-400 hover:text-[#5B5CEF] hover:bg-[#5B5CEF]/5 rounded-lg transition-all duration-150 cursor-pointer"
+                                            title="View"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                        </button>
+
+                                        {/* Edit */}
+                                        <button
+                                            onClick={() => onEdit(account)}
+                                            className="p-2 text-slate-400 hover:text-[#5B5CEF] hover:bg-[#5B5CEF]/5 rounded-lg transition-all duration-150 cursor-pointer"
+                                            title="Edit"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                                                <path d="m15 5 4 4" />
+                                            </svg>
+                                        </button>
+
+                                        {/* Delete */}
+                                        <button
+                                            onClick={() => onDelete(account)}
+                                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-150 cursor-pointer"
+                                            title="Delete"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M3 6h18" />
+                                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}

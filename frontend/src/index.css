@@ -3,7 +3,7 @@
 
 /* ============================================
    DESIGN SYSTEM — CSS Custom Properties
-   Change any variable here to update globally.
+   (Variables don't conflict with Tailwind)
    ============================================ */
 
 :root {
@@ -46,7 +46,7 @@
     --color-border-light: hsl(220, 15%, 93%);
     --color-border-focus: var(--color-primary);
 
-    /* --- Sidebar (Light Theme — Matching Reference) --- */
+    /* --- Sidebar (Light Theme) --- */
     --sidebar-bg: hsl(0, 0%, 100%);
     --sidebar-border: hsl(220, 15%, 90%);
     --sidebar-text: hsl(220, 10%, 45%);
@@ -58,7 +58,6 @@
     --sidebar-icon: hsl(220, 10%, 55%);
     --sidebar-icon-active: hsl(245, 58%, 51%);
 
-    /* Keep old variables for backward compat */
     --color-bg-sidebar: hsl(0, 0%, 100%);
     --color-text-sidebar: hsl(220, 10%, 45%);
     --color-text-sidebar-active: hsl(245, 58%, 51%);
@@ -74,14 +73,14 @@
     --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
-    --text-xs: 0.75rem;     /* 12px */
-    --text-sm: 0.8125rem;   /* 13px */
-    --text-base: 0.875rem;  /* 14px */
-    --text-md: 1rem;        /* 16px */
-    --text-lg: 1.125rem;    /* 18px */
-    --text-xl: 1.25rem;     /* 20px */
-    --text-2xl: 1.5rem;     /* 24px */
-    --text-3xl: 1.875rem;   /* 30px */
+    --text-xs: 0.75rem;
+    --text-sm: 0.8125rem;
+    --text-base: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
 
     /* --- Spacing --- */
     --spacing-xs: 0.25rem;
@@ -124,89 +123,85 @@
 }
 
 /* ============================================
-   GLOBAL RESETS & BASE STYLES
+   BASE STYLES — Inside @layer base so
+   Tailwind utility classes can override them.
    ============================================ */
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-}
+    html {
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
 
-body {
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
-    line-height: 1.6;
-    color: var(--color-text);
-    background-color: var(--color-bg);
-    min-height: 100vh;
-    width: 100%;
-    overflow-x: hidden;
-}
+    body {
+        font-family: var(--font-sans);
+        font-size: var(--text-base);
+        line-height: 1.6;
+        color: var(--color-text);
+        background-color: var(--color-bg);
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+    }
 
-#root {
-    min-height: 100vh;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    text-align: left;
-    border: none;
-    display: flex;
-}
+    #root {
+        min-height: 100vh;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        text-align: left;
+        border: none;
+        display: flex;
+    }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-sans);
-    font-weight: 600;
-    color: var(--color-text-heading);
-    line-height: 1.3;
-}
+    h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-sans);
+        font-weight: 600;
+        color: var(--color-text-heading);
+        line-height: 1.3;
+    }
 
-h1 { font-size: var(--text-3xl); }
-h2 { font-size: var(--text-2xl); }
-h3 { font-size: var(--text-xl); }
-h4 { font-size: var(--text-lg); }
+    a {
+        color: var(--color-primary);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+    }
 
-a {
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color var(--transition-fast);
-}
+    a:hover {
+        color: var(--color-primary-light);
+    }
 
-a:hover {
-    color: var(--color-primary-light);
-}
+    button {
+        cursor: pointer;
+        font-family: var(--font-sans);
+    }
 
-button {
-    cursor: pointer;
-    font-family: var(--font-sans);
-}
-
-input, select, textarea {
-    font-family: var(--font-sans);
-    font-size: var(--text-base);
+    input, select, textarea {
+        font-family: var(--font-sans);
+    }
 }
 
 /* ============================================
-   LAYOUT SYSTEM
+   LAYOUT SYSTEM — Component classes
+   (used by Sidebar, Header, MainLayout)
    ============================================ */
 
-/* Main layout wrapper — fills full viewport */
 .main-layout {
     display: flex;
     min-height: 100vh;
     width: 100%;
 }
 
-/* Sidebar — fixed on desktop */
 .sidebar {
     width: var(--sidebar-width);
     min-height: 100vh;
@@ -221,7 +216,6 @@ input, select, textarea {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Content area — offset by sidebar width on desktop */
 .main-content {
     flex: 1;
     margin-left: var(--sidebar-width);
@@ -232,7 +226,6 @@ input, select, textarea {
     background-color: var(--color-bg);
 }
 
-/* Top nav bar */
 .topnav {
     height: var(--topnav-height);
     background-color: var(--topnav-bg);
@@ -248,7 +241,6 @@ input, select, textarea {
     gap: 16px;
 }
 
-/* Page content area */
 .page-content {
     flex: 1;
     padding: 28px 32px;
@@ -256,7 +248,6 @@ input, select, textarea {
     width: 100%;
 }
 
-/* Mobile sidebar overlay (hidden by default) */
 .sidebar-overlay {
     display: none;
     position: fixed;
@@ -271,7 +262,6 @@ input, select, textarea {
     opacity: 1;
 }
 
-/* Hamburger button (hidden on desktop) */
 .hamburger-btn {
     display: none;
     align-items: center;
@@ -291,7 +281,6 @@ input, select, textarea {
     background-color: var(--color-bg-hover);
 }
 
-/* Search bar container */
 .topnav-search {
     position: relative;
     width: 100%;
@@ -300,7 +289,6 @@ input, select, textarea {
     min-width: 0;
 }
 
-/* Right section of header */
 .topnav-right {
     display: flex;
     align-items: center;
@@ -308,7 +296,6 @@ input, select, textarea {
     flex-shrink: 0;
 }
 
-/* User name in header */
 .topnav-username {
     font-size: var(--text-base);
     font-weight: 500;
@@ -320,7 +307,6 @@ input, select, textarea {
    RESPONSIVE BREAKPOINTS
    ============================================ */
 
-/* Tablet — ≤ 1024px */
 @media (max-width: 1024px) {
     :root {
         --sidebar-width: 240px;
@@ -339,9 +325,7 @@ input, select, textarea {
     }
 }
 
-/* Small tablet / Large mobile — ≤ 768px */
 @media (max-width: 768px) {
-    /* Sidebar becomes an off-canvas drawer */
     .sidebar {
         transform: translateX(-100%);
         box-shadow: none;
@@ -353,7 +337,6 @@ input, select, textarea {
         box-shadow: var(--shadow-xl);
     }
 
-    /* Show overlay when sidebar is open */
     .sidebar-overlay {
         display: block;
         pointer-events: none;
@@ -363,13 +346,11 @@ input, select, textarea {
         pointer-events: auto;
     }
 
-    /* Content takes full width */
     .main-content {
         margin-left: 0;
         width: 100%;
     }
 
-    /* Show hamburger */
     .hamburger-btn {
         display: flex;
     }
@@ -387,23 +368,15 @@ input, select, textarea {
         flex: 1;
     }
 
-    /* Hide username on mobile, keep avatar */
     .topnav-username {
         display: none;
     }
 
-    /* Show close button in sidebar on mobile */
     .sidebar-close-btn {
         display: flex !important;
     }
-
-    /* Responsive page title */
-    h1 {
-        font-size: var(--text-2xl);
-    }
 }
 
-/* Mobile — ≤ 480px */
 @media (max-width: 480px) {
     .page-content {
         padding: 16px 12px;
@@ -414,24 +387,9 @@ input, select, textarea {
         gap: 8px;
     }
 
-    /* Smaller icon buttons */
     .topnav-right {
         gap: 4px;
     }
-
-    h1 {
-        font-size: var(--text-xl);
-    }
-}
-
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
-
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 /* ============================================
@@ -501,20 +459,4 @@ input, select, textarea {
 @keyframes shimmer {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
-}
-
-.animate-fade-in {
-    animation: fadeIn var(--transition-base) ease-out;
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp var(--transition-slow) ease-out;
-}
-
-.animate-slide-in-right {
-    animation: slideInRight var(--transition-slow) ease-out;
-}
-
-.animate-scale-in {
-    animation: scaleIn var(--transition-base) ease-out;
 }
