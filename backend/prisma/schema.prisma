@@ -66,6 +66,7 @@ model Account {
   name           String      @db.VarChar(100)
   kind           AccountKind
   openingBalance Decimal     @default(0) @db.Decimal(14, 2)
+  isActive       Boolean     @default(true)
   createdAt      DateTime    @default(now()) @db.Timestamptz()
   updatedAt      DateTime?   @updatedAt @db.Timestamptz()
   deletedAt      DateTime?   @db.Timestamptz()

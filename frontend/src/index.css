@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
 
 /* ============================================
    DESIGN SYSTEM — CSS Custom Properties
@@ -32,7 +32,6 @@
     /* --- Neutral Palette (Slate) --- */
     --color-bg: hsl(220, 20%, 97%);
     --color-bg-card: hsl(0, 0%, 100%);
-    --color-bg-sidebar: hsl(230, 25%, 14%);
     --color-bg-hover: hsl(220, 15%, 94%);
     --color-bg-input: hsl(0, 0%, 100%);
     --color-bg-modal-overlay: hsla(230, 25%, 14%, 0.5);
@@ -42,12 +41,34 @@
     --color-text-muted: hsl(220, 8%, 65%);
     --color-text-heading: hsl(230, 25%, 14%);
     --color-text-on-primary: hsl(0, 0%, 100%);
-    --color-text-sidebar: hsl(220, 15%, 75%);
-    --color-text-sidebar-active: hsl(0, 0%, 100%);
 
     --color-border: hsl(220, 15%, 90%);
     --color-border-light: hsl(220, 15%, 93%);
     --color-border-focus: var(--color-primary);
+
+    /* --- Sidebar (Light Theme — Matching Reference) --- */
+    --sidebar-bg: hsl(0, 0%, 100%);
+    --sidebar-border: hsl(220, 15%, 90%);
+    --sidebar-text: hsl(220, 10%, 45%);
+    --sidebar-text-hover: hsl(245, 58%, 51%);
+    --sidebar-active-bg: hsla(245, 58%, 51%, 0.08);
+    --sidebar-active-text: hsl(245, 58%, 51%);
+    --sidebar-active-border: hsl(245, 58%, 51%);
+    --sidebar-label: hsl(220, 8%, 60%);
+    --sidebar-icon: hsl(220, 10%, 55%);
+    --sidebar-icon-active: hsl(245, 58%, 51%);
+
+    /* Keep old variables for backward compat */
+    --color-bg-sidebar: hsl(0, 0%, 100%);
+    --color-text-sidebar: hsl(220, 10%, 45%);
+    --color-text-sidebar-active: hsl(245, 58%, 51%);
+
+    /* --- Top Navbar --- */
+    --topnav-bg: hsl(0, 0%, 100%);
+    --topnav-border: hsl(220, 15%, 90%);
+    --topnav-height: 64px;
+    --topnav-search-bg: hsl(220, 20%, 96%);
+    --topnav-search-border: hsl(220, 15%, 90%);
 
     /* --- Typography --- */
     --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -128,6 +149,8 @@ body {
     color: var(--color-text);
     background-color: var(--color-bg);
     min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
 }
 
 #root {
@@ -170,6 +193,235 @@ button {
 input, select, textarea {
     font-family: var(--font-sans);
     font-size: var(--text-base);
+}
+
+/* ============================================
+   LAYOUT SYSTEM
+   ============================================ */
+
+/* Main layout wrapper — fills full viewport */
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* Sidebar — fixed on desktop */
+.sidebar {
+    width: var(--sidebar-width);
+    min-height: 100vh;
+    background-color: var(--sidebar-bg);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    border-right: 1px solid var(--sidebar-border);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Content area — offset by sidebar width on desktop */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: calc(100% - var(--sidebar-width));
+    background-color: var(--color-bg);
+}
+
+/* Top nav bar */
+.topnav {
+    height: var(--topnav-height);
+    background-color: var(--topnav-bg);
+    border-bottom: 1px solid var(--topnav-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 150;
+    flex-shrink: 0;
+    gap: 16px;
+}
+
+/* Page content area */
+.page-content {
+    flex: 1;
+    padding: 28px 32px;
+    animation: fadeIn 0.3s ease-out;
+    width: 100%;
+}
+
+/* Mobile sidebar overlay (hidden by default) */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: hsla(230, 25%, 14%, 0.5);
+    z-index: 199;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.visible {
+    opacity: 1;
+}
+
+/* Hamburger button (hidden on desktop) */
+.hamburger-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all 180ms ease;
+    flex-shrink: 0;
+}
+
+.hamburger-btn:hover {
+    background-color: var(--color-bg-hover);
+}
+
+/* Search bar container */
+.topnav-search {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Right section of header */
+.topnav-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* User name in header */
+.topnav-username {
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-text);
+    white-space: nowrap;
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* Tablet — ≤ 1024px */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+
+    .page-content {
+        padding: 24px;
+    }
+
+    .topnav {
+        padding: 0 20px;
+    }
+
+    .topnav-search {
+        max-width: 300px;
+    }
+}
+
+/* Small tablet / Large mobile — ≤ 768px */
+@media (max-width: 768px) {
+    /* Sidebar becomes an off-canvas drawer */
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+        z-index: 250;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-xl);
+    }
+
+    /* Show overlay when sidebar is open */
+    .sidebar-overlay {
+        display: block;
+        pointer-events: none;
+    }
+
+    .sidebar-overlay.visible {
+        pointer-events: auto;
+    }
+
+    /* Content takes full width */
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* Show hamburger */
+    .hamburger-btn {
+        display: flex;
+    }
+
+    .page-content {
+        padding: 20px 16px;
+    }
+
+    .topnav {
+        padding: 0 16px;
+    }
+
+    .topnav-search {
+        max-width: none;
+        flex: 1;
+    }
+
+    /* Hide username on mobile, keep avatar */
+    .topnav-username {
+        display: none;
+    }
+
+    /* Show close button in sidebar on mobile */
+    .sidebar-close-btn {
+        display: flex !important;
+    }
+
+    /* Responsive page title */
+    h1 {
+        font-size: var(--text-2xl);
+    }
+}
+
+/* Mobile — ≤ 480px */
+@media (max-width: 480px) {
+    .page-content {
+        padding: 16px 12px;
+    }
+
+    .topnav {
+        padding: 0 12px;
+        gap: 8px;
+    }
+
+    /* Smaller icon buttons */
+    .topnav-right {
+        gap: 4px;
+    }
+
+    h1 {
+        font-size: var(--text-xl);
+    }
 }
 
 /* ============================================

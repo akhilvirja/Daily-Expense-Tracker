@@ -24,6 +24,8 @@ export const createAccountSchema = z.object({
         .number({ invalid_type_error: 'Opening balance must be a number' })
         .finite('Opening balance must be a finite number')
         .default(0),
+
+    isActive: z.boolean().optional(),
 });
 
 /**
@@ -48,4 +50,6 @@ export const updateAccountSchema = z.object({
         .number({ invalid_type_error: 'Opening balance must be a number' })
         .finite('Opening balance must be a finite number')
         .optional(),
+
+    isActive: z.boolean().optional(),
 });

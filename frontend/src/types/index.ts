@@ -44,6 +44,7 @@ export interface Account {
     kind: AccountKind;
     openingBalance: number;
     currentBalance: number; // Computed field returned by API
+    isActive: boolean;
     createdAt: string;
     updatedAt: string | null;
     deletedAt: string | null;
@@ -53,10 +54,12 @@ export interface CreateAccountPayload {
     name: string;
     kind?: AccountKind;
     openingBalance?: number;
+    isActive?: boolean;
 }
 
 export interface UpdateAccountPayload {
     name?: string;
     kind?: AccountKind;
     openingBalance?: number;
+    isActive?: boolean;
 }
