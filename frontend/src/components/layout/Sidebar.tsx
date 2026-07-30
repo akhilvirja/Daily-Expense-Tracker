@@ -153,22 +153,57 @@ export const Sidebar: React.FC = () => {
                 </ul>
             </nav>
 
-            {/* Footer */}
+            {/* Footer / User Profile */}
             <div
                 style={{
                     padding: 'var(--spacing-lg) var(--spacing-xl)',
                     borderTop: '1px solid hsla(230, 25%, 25%, 0.3)',
+                    marginTop: 'auto'
                 }}
             >
-                <span
-                    style={{
-                        fontSize: 'var(--text-xs)',
-                        color: 'var(--color-text-sidebar)',
-                        opacity: 0.6,
-                    }}
-                >
-                    v1.0.0 • Built with AI
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div style={{
+                            width: '32px',
+                            height: '32px',
+                            borderRadius: '50%',
+                            backgroundColor: 'var(--color-primary)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: '14px'
+                        }}>
+                            {/* In a real app we'd use useAuth(), but we need to hook it up */}
+                            U
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ color: 'white', fontSize: '14px', fontWeight: 500 }}>User</span>
+                            <span style={{ color: 'var(--color-text-sidebar)', fontSize: '11px' }}>Pro Plan</span>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            window.location.href = '/login';
+                        }}
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            color: 'var(--color-text-sidebar)',
+                            cursor: 'pointer',
+                            padding: '4px',
+                            borderRadius: '4px',
+                        }}
+                        title="Logout"
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'hsla(0, 100%, 50%, 0.1)')}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    >
+                        🚪
+                    </button>
+                </div>
             </div>
         </aside>
     );

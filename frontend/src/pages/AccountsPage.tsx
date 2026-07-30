@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Header } from '../../components/layout/Header';
-import { AccountList } from '../../components/accounts/AccountList';
-import { AccountForm } from '../../components/accounts/AccountForm';
-import { Modal } from '../../components/ui/Modal';
-import { Toast } from '../../components/ui/Toast';
-import { Button } from '../../components/ui/Button';
-import { accountApi } from '../../api/accountApi';
-import type { Account, CreateAccountPayload, UpdateAccountPayload } from '../../types';
+import { Header } from '../components/layout/Header';
+import { AccountList } from '../components/accounts/AccountList';
+import { AccountForm } from '../components/accounts/AccountForm';
+import { Modal } from '../components/ui/Modal';
+import { Toast } from '../components/ui/Toast';
+import { Button } from '../components/ui/Button';
+import { accountApi } from '../api/accountApi';
+import type { Account, CreateAccountPayload, UpdateAccountPayload } from '../types';
 
 export const AccountsPage: React.FC = () => {
     // State

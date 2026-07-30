@@ -14,6 +14,18 @@ const axiosInstance = axios.create({
     timeout: 10000, // 10 seconds
 });
 
+// Request interceptor to inject JWT token
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 // Response interceptor — extract data or throw meaningful errors
 axiosInstance.interceptors.response.use(
     (response) => response,

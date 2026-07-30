@@ -21,6 +21,11 @@ const router = Router();
  * DELETE /:id           → Soft-delete account
  */
 
+import { authenticate } from '../../middleware/authMiddleware.js';
+
+// Apply authentication to all account routes
+router.use(authenticate);
+
 router.get('/', getAllAccounts);
 router.get('/:id', getAccountById);
 router.post('/', validate(createAccountSchema), createAccount);

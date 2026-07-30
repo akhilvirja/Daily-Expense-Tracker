@@ -1,5 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ============================================
+// Prisma Schema — Daily Expense & Tracker App
+// ============================================
 
 generator client {
   provider = "prisma-client"
@@ -11,29 +12,201 @@ datasource db {
 }
 
 // ============================================
-// Module 1: Account & Ledger Management
+// Enums
 // ============================================
 
-/// Represents a bank account, cash reserve, or wallet.
-/// Each account tracks its own running balance.
+enum AccountKind {
+  bank
+  cash
+}
+
+enum TxnType {
+  credit
+  debit
+}
+
+enum BillStatus {
+  pending
+  paid
+}
+
+// ============================================
+// User
+// ============================================
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  fullName     String    @db.VarChar(150)
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @db.Text
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now()) @db.Timestamptz()
+  updatedAt    DateTime? @updatedAt @db.Timestamptz()
+  deletedAt    DateTime? @db.Timestamptz()
+
+  // Relations
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  trackerItems TrackerItem[]
+  trackerLogs  TrackerLog[]
+  bills        Bill[]
+
+  @@index([email])
+  @@map("users")
+}
+
+// ============================================
+// Account & Ledger
+// ============================================
+
 model Account {
-  id             String   @id @default(cuid())
-  name           String   @unique                        // e.g., "Paresh - HDFC", "Cash - Home"
-  type           String   @default("bank")               // "bank", "cash", "wallet"
-  bankName       String?                                 // Optional: "HDFC", "ICICI"
-  holderName     String?                                 // Optional: "Paresh", "Harsha"
-  initialBalance Float    @default(0)                    // Starting balance
-  currentBalance Float    @default(0)                    // Computed: initialBalance + credits - debits
-  description    String?                                 // Optional notes
-  isActive       Boolean  @default(true)                 // Soft delete flag
+  id             String      @id @default(uuid()) @db.Uuid
+  userId         String      @db.Uuid
+  name           String      @db.VarChar(100)
+  kind           AccountKind
+  openingBalance Decimal     @default(0) @db.Decimal(14, 2)
+  createdAt      DateTime    @default(now()) @db.Timestamptz()
+  updatedAt      DateTime?   @updatedAt @db.Timestamptz()
+  deletedAt      DateTime?   @db.Timestamptz()
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Relations
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  billPayments Bill[]
 
-  // Relations (will be added in later phases)
-  // transactions Transaction[]
-  // billPayments Bill[]
-
-  @@index([isActive])
+  @@index([userId])
   @@map("accounts")
+}
+
+// ============================================
+// Category
+// ============================================
+
+model Category {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  name      String    @db.VarChar(100)
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+
+  @@unique([userId, name])
+  @@unique([id, userId])
+  @@index([userId])
+  @@map("categories")
+}
+
+// ============================================
+// Transaction
+// ============================================
+
+model Transaction {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
+  accountId   String    @db.Uuid
+  categoryId  String?   @db.Uuid
+  type        TxnType
+  amount      Decimal   @db.Decimal(14, 2)
+  description String?   @db.Text
+  occurredOn  DateTime  @db.Date
+  billId      String?   @db.Uuid
+  createdAt   DateTime  @default(now()) @db.Timestamptz()
+  updatedAt   DateTime? @updatedAt @db.Timestamptz()
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id])
+  account  Account   @relation(fields: [accountId], references: [id])
+  category Category? @relation(fields: [categoryId, userId], references: [id, userId])
+  bill     Bill?     @relation(fields: [billId], references: [id])
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([categoryId])
+  @@index([billId])
+  @@index([occurredOn])
+  @@map("transactions")
+}
+
+// ============================================
+// Tracker Item (Dynamic Daily Items)
+// ============================================
+
+model TrackerItem {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  name      String    @db.VarChar(150)
+  unit      String    @db.VarChar(30)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @db.Timestamptz()
+  deletedAt DateTime? @db.Timestamptz()
+
+  // Relations
+  user  User         @relation(fields: [userId], references: [id])
+  logs  TrackerLog[]
+  bills Bill[]
+
+  @@index([userId])
+  @@map("tracker_items")
+}
+
+// ============================================
+// Tracker Log (Daily Entries)
+// ============================================
+
+model TrackerLog {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  itemId    String    @db.Uuid
+  logDate   DateTime  @db.Date
+  quantity  Decimal   @db.Decimal(14, 3)
+  amount    Decimal   @db.Decimal(14, 2)
+  note      String?   @db.Text
+  createdAt DateTime  @default(now()) @db.Timestamptz()
+  updatedAt DateTime? @updatedAt @db.Timestamptz()
+
+  // Relations
+  user User        @relation(fields: [userId], references: [id])
+  item TrackerItem @relation(fields: [itemId], references: [id])
+
+  @@unique([itemId, logDate])
+  @@index([userId])
+  @@index([itemId])
+  @@map("tracker_logs")
+}
+
+// ============================================
+// Bill (Auto-Generated from Tracker Logs)
+// ============================================
+
+model Bill {
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String     @db.Uuid
+  itemId        String     @db.Uuid
+  periodStart   DateTime   @db.Date
+  periodEnd     DateTime   @db.Date
+  totalQuantity Decimal    @db.Decimal(14, 3)
+  totalAmount   Decimal    @db.Decimal(14, 2)
+  status        BillStatus @default(pending)
+  paidAccountId String?    @db.Uuid
+  paidOn        DateTime?  @db.Date
+  createdAt     DateTime   @default(now()) @db.Timestamptz()
+  updatedAt     DateTime? @updatedAt @db.Timestamptz()
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id])
+  item         TrackerItem   @relation(fields: [itemId], references: [id])
+  paidAccount  Account?      @relation(fields: [paidAccountId], references: [id])
+  transactions Transaction[]
+
+  @@unique([itemId, periodStart])
+  @@index([userId])
+  @@index([itemId])
+  @@index([paidAccountId])
+  @@map("bills")
 }

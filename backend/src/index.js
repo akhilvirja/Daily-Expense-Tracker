@@ -5,7 +5,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import prisma from './config/db.js';
 
 // --- Route Imports ---
-import accountRoutes from './routes/v1/account.routes.js';
+import v1Routes from './routes/v1/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -14,7 +14,16 @@ const PORT = process.env.PORT || 5000;
 // Global Middleware
 // ========================
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+        if (allowedOrigins.indexOf(origin) !== -1 || process.env.CORS_ORIGIN === '*') {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 app.use(express.json({ limit: '16kb' }));
@@ -28,15 +37,9 @@ app.get('/api/health', (req, res) => {
 });
 
 // ========================
-// API Routes (v1)
+// API Routes
 // ========================
-app.use('/api/v1/accounts', accountRoutes);
-// app.use('/api/v1/categories', categoryRoutes);       // Phase 2
-// app.use('/api/v1/transactions', transactionRoutes);   // Phase 2
-// app.use('/api/v1/items', dynamicItemRoutes);           // Phase 3
-// app.use('/api/v1/daily-logs', dailyLogRoutes);         // Phase 3
-// app.use('/api/v1/bills', billRoutes);                  // Phase 4
-// app.use('/api/v1/reports', reportRoutes);              // Phase 5
+app.use('/api/v1', v1Routes);
 
 // ========================
 // 404 Handler (must be after all routes)

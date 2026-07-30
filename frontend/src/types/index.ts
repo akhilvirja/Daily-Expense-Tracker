@@ -15,39 +15,48 @@ export interface ValidationError {
 }
 
 // ============================================
+// Auth & User Types
+// ============================================
+
+export interface User {
+    id: string;
+    fullName: string;
+    email: string;
+}
+
+export interface AuthResponse {
+    id: string;
+    fullName: string;
+    email: string;
+    token: string;
+}
+
+// ============================================
 // Module 1: Account Types
 // ============================================
 
-export type AccountType = 'bank' | 'cash' | 'wallet';
+export type AccountKind = 'bank' | 'cash';
 
 export interface Account {
     id: string;
+    userId: string;
     name: string;
-    type: AccountType;
-    bankName: string | null;
-    holderName: string | null;
-    initialBalance: number;
-    currentBalance: number;
-    description: string | null;
-    isActive: boolean;
+    kind: AccountKind;
+    openingBalance: number;
+    currentBalance: number; // Computed field returned by API
     createdAt: string;
-    updatedAt: string;
+    updatedAt: string | null;
+    deletedAt: string | null;
 }
 
 export interface CreateAccountPayload {
     name: string;
-    type?: AccountType;
-    bankName?: string | null;
-    holderName?: string | null;
-    initialBalance?: number;
-    description?: string | null;
+    kind?: AccountKind;
+    openingBalance?: number;
 }
 
 export interface UpdateAccountPayload {
     name?: string;
-    type?: AccountType;
-    bankName?: string | null;
-    holderName?: string | null;
-    initialBalance?: number;
-    description?: string | null;
+    kind?: AccountKind;
+    openingBalance?: number;
 }

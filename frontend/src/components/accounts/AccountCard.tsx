@@ -9,10 +9,9 @@ interface AccountCardProps {
     onDelete: (account: Account) => void;
 }
 
-const typeConfig: Record<string, { label: string; variant: 'primary' | 'success' | 'warning'; icon: string }> = {
+const kindConfig: Record<string, { label: string; variant: 'primary' | 'success' | 'warning'; icon: string }> = {
     bank: { label: 'Bank', variant: 'primary', icon: '🏦' },
     cash: { label: 'Cash', variant: 'success', icon: '💵' },
-    wallet: { label: 'Wallet', variant: 'warning', icon: '👛' },
 };
 
 /**
@@ -28,7 +27,7 @@ const formatCurrency = (amount: number): string => {
 };
 
 export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDelete }) => {
-    const config = typeConfig[account.type] || typeConfig.bank;
+    const config = kindConfig[account.kind] || kindConfig.bank;
     const isPositive = account.currentBalance >= 0;
 
     return (
@@ -69,17 +68,6 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDel
                         >
                             {account.name}
                         </h4>
-                        {account.holderName && (
-                            <span
-                                style={{
-                                    fontSize: 'var(--text-xs)',
-                                    color: 'var(--color-text-muted)',
-                                }}
-                            >
-                                {account.holderName}
-                                {account.bankName ? ` • ${account.bankName}` : ''}
-                            </span>
-                        )}
                     </div>
                 </div>
                 <Badge variant={config.variant}>{config.label}</Badge>
@@ -110,20 +98,6 @@ export const AccountCard: React.FC<AccountCardProps> = ({ account, onEdit, onDel
                     {formatCurrency(account.currentBalance)}
                 </div>
             </div>
-
-            {/* Description */}
-            {account.description && (
-                <p
-                    style={{
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--color-text-secondary)',
-                        marginBottom: 'var(--spacing-lg)',
-                        lineHeight: 1.5,
-                    }}
-                >
-                    {account.description}
-                </p>
-            )}
 
             {/* Actions */}
             <div

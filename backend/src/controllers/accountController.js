@@ -4,121 +4,153 @@ import { sendSuccess, sendError } from '../utils/response.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
 import { STATUS_MESSAGES } from '../constants/statusMessages.js';
 
+// ============================================
+// Enforcing user scope via req.user.id
+// ============================================
+
 /**
- * @desc    Get all active accounts with current balances
+ * Helper: Compute the running balance for an account.
+ * Balance = openingBalance + sum(credits) - sum(debits)
+ */
+const computeBalance = async (accountId) => {
+    const result = await prisma.transaction.groupBy({
+        by: ['type'],
+        where: { accountId },
+        _sum: { amount: true },
+    });
+
+    let credits = 0;
+    let debits = 0;
+
+    for (const row of result) {
+        const sum = Number(row._sum.amount) || 0;
+        if (row.type === 'credit') credits = sum;
+        if (row.type === 'debit') debits = sum;
+    }
+
+    const account = await prisma.account.findUnique({
+        where: { id: accountId },
+        select: { openingBalance: true },
+    });
+
+    return Number(account.openingBalance) + credits - debits;
+};
+
+/**
+ * Helper: Attach computed balance to an account object
+ */
+const withBalance = async (account) => {
+    const balance = await computeBalance(account.id);
+    return { ...account, currentBalance: balance };
+};
+
+/**
+ * @desc    Get all active accounts (not soft-deleted) for the current user
  * @route   GET /api/v1/accounts
- * @access  Public
  */
 export const getAllAccounts = asyncHandler(async (req, res) => {
     const accounts = await prisma.account.findMany({
-        where: { isActive: true },
+        where: {
+            userId: req.user.id,
+            deletedAt: null,
+        },
         orderBy: { createdAt: 'desc' },
     });
 
-    return sendSuccess(res, STATUS_CODES.OK, accounts, STATUS_MESSAGES.SUCCESS.FETCHED);
+    // Attach computed balance to each account
+    const accountsWithBalance = await Promise.all(accounts.map(withBalance));
+
+    return sendSuccess(res, STATUS_CODES.OK, accountsWithBalance, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
  * @desc    Get a single account by ID
  * @route   GET /api/v1/accounts/:id
- * @access  Public
  */
 export const getAccountById = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
     const account = await prisma.account.findUnique({
-        where: { id },
+        where: { id, userId: req.user.id },
     });
 
-    if (!account || !account.isActive) {
+    if (!account || account.deletedAt !== null) {
         return sendError(res, STATUS_CODES.NOT_FOUND, STATUS_MESSAGES.ERROR.NOT_FOUND);
     }
 
-    return sendSuccess(res, STATUS_CODES.OK, account, STATUS_MESSAGES.SUCCESS.FETCHED);
+    const accountWithBalance = await withBalance(account);
+    return sendSuccess(res, STATUS_CODES.OK, accountWithBalance, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
  * @desc    Create a new account
  * @route   POST /api/v1/accounts
- * @access  Public
  */
 export const createAccount = asyncHandler(async (req, res) => {
     const data = req.validatedBody;
 
-    // Set currentBalance equal to initialBalance on creation
     const account = await prisma.account.create({
         data: {
             ...data,
-            currentBalance: data.initialBalance || 0,
+            userId: req.user.id,
         },
     });
 
-    return sendSuccess(res, STATUS_CODES.CREATED, account, STATUS_MESSAGES.SUCCESS.CREATED);
+    const accountWithBalance = await withBalance(account);
+    return sendSuccess(res, STATUS_CODES.CREATED, accountWithBalance, STATUS_MESSAGES.SUCCESS.CREATED);
 });
 
 /**
  * @desc    Update an existing account
  * @route   PUT /api/v1/accounts/:id
- * @access  Public
  */
 export const updateAccount = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const data = req.validatedBody;
 
-    // Check if account exists
-    const existingAccount = await prisma.account.findUnique({
-        where: { id },
-    });
+    // Check existence, ownership, and soft-delete status
+    const existing = await prisma.account.findUnique({ where: { id, userId: req.user.id } });
 
-    if (!existingAccount || !existingAccount.isActive) {
+    if (!existing || existing.deletedAt !== null) {
         return sendError(res, STATUS_CODES.NOT_FOUND, STATUS_MESSAGES.ERROR.NOT_FOUND);
-    }
-
-    // If initialBalance is being updated, recalculate currentBalance
-    const updateData = { ...data };
-    if (data.initialBalance !== undefined && data.initialBalance !== existingAccount.initialBalance) {
-        const balanceDifference = data.initialBalance - existingAccount.initialBalance;
-        updateData.currentBalance = existingAccount.currentBalance + balanceDifference;
     }
 
     const account = await prisma.account.update({
         where: { id },
-        data: updateData,
+        data,
     });
 
-    return sendSuccess(res, STATUS_CODES.OK, account, STATUS_MESSAGES.SUCCESS.UPDATED);
+    const accountWithBalance = await withBalance(account);
+    return sendSuccess(res, STATUS_CODES.OK, accountWithBalance, STATUS_MESSAGES.SUCCESS.UPDATED);
 });
 
 /**
- * @desc    Soft-delete an account (set isActive to false)
+ * @desc    Soft-delete an account (set deletedAt timestamp)
  * @route   DELETE /api/v1/accounts/:id
- * @access  Public
  */
 export const deleteAccount = asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    // Check if account exists
-    const existingAccount = await prisma.account.findUnique({
-        where: { id },
-    });
+    const existing = await prisma.account.findUnique({ where: { id, userId: req.user.id } });
 
-    if (!existingAccount || !existingAccount.isActive) {
+    if (!existing || existing.deletedAt !== null) {
         return sendError(res, STATUS_CODES.NOT_FOUND, STATUS_MESSAGES.ERROR.NOT_FOUND);
     }
 
-    // Check if account has non-zero balance
-    if (existingAccount.currentBalance !== 0) {
+    // Check if account has linked transactions
+    const txnCount = await prisma.transaction.count({ where: { accountId: id } });
+    if (txnCount > 0) {
         return sendError(
             res,
             STATUS_CODES.BAD_REQUEST,
-            'Cannot delete account with non-zero balance. Please transfer or withdraw all funds first.'
+            'Cannot delete account with linked transactions. Reassign or delete them first.'
         );
     }
 
-    // Soft-delete: set isActive to false
+    // Soft-delete: set deletedAt timestamp
     await prisma.account.update({
         where: { id },
-        data: { isActive: false },
+        data: { deletedAt: new Date() },
     });
 
     return sendSuccess(res, STATUS_CODES.OK, null, STATUS_MESSAGES.SUCCESS.DELETED);

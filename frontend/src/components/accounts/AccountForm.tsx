@@ -11,10 +11,9 @@ interface AccountFormProps {
     isLoading?: boolean;
 }
 
-const accountTypeOptions = [
+const accountKindOptions = [
     { value: 'bank', label: '🏦 Bank Account' },
     { value: 'cash', label: '💵 Cash Reserve' },
-    { value: 'wallet', label: '👛 Digital Wallet' },
 ];
 
 export const AccountForm: React.FC<AccountFormProps> = ({
@@ -27,11 +26,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
 
     const [formData, setFormData] = useState({
         name: '',
-        type: 'bank',
-        bankName: '',
-        holderName: '',
-        initialBalance: 0,
-        description: '',
+        kind: 'bank',
+        openingBalance: 0,
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -41,11 +37,8 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         if (account) {
             setFormData({
                 name: account.name,
-                type: account.type,
-                bankName: account.bankName || '',
-                holderName: account.holderName || '',
-                initialBalance: account.initialBalance,
-                description: account.description || '',
+                kind: account.kind,
+                openingBalance: account.openingBalance,
             });
         }
     }, [account]);
@@ -56,7 +49,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: name === 'initialBalance' ? parseFloat(value) || 0 : value,
+            [name]: name === 'openingBalance' ? parseFloat(value) || 0 : value,
         }));
         // Clear error on change
         if (errors[name]) {
@@ -75,11 +68,11 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         } else if (formData.name.trim().length < 2) {
             newErrors.name = 'Account name must be at least 2 characters';
         }
-        if (!formData.type) {
-            newErrors.type = 'Account type is required';
+        if (!formData.kind) {
+            newErrors.kind = 'Account kind is required';
         }
-        if (formData.initialBalance < 0) {
-            newErrors.initialBalance = 'Initial balance cannot be negative';
+        if (formData.openingBalance < 0) {
+            newErrors.openingBalance = 'Opening balance cannot be negative';
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -89,13 +82,12 @@ export const AccountForm: React.FC<AccountFormProps> = ({
         e.preventDefault();
         if (!validate()) return;
 
-        const payload: CreateAccountPayload = {
+        const payload: CreateAccountPayload | UpdateAccountPayload = {
+            // Temporary default user ID until authentication is available
+            ...(isEditMode ? {} : { userId: '123e4567-e89b-12d3-a456-426614174000' }), 
             name: formData.name.trim(),
-            type: formData.type as 'bank' | 'cash' | 'wallet',
-            bankName: formData.bankName.trim() || null,
-            holderName: formData.holderName.trim() || null,
-            initialBalance: formData.initialBalance,
-            description: formData.description.trim() || null,
+            kind: formData.kind as 'bank' | 'cash',
+            openingBalance: formData.openingBalance,
         };
 
         onSubmit(payload);
@@ -120,77 +112,25 @@ export const AccountForm: React.FC<AccountFormProps> = ({
                 />
 
                 <Select
-                    label="Account Type *"
-                    name="type"
-                    value={formData.type}
+                    label="Account Kind *"
+                    name="kind"
+                    value={formData.kind}
                     onChange={handleChange}
-                    options={accountTypeOptions}
-                    error={errors.type}
+                    options={accountKindOptions}
+                    error={errors.kind}
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--spacing-lg)' }}>
-                    <Input
-                        label="Bank Name"
-                        name="bankName"
-                        placeholder="e.g., HDFC, ICICI"
-                        value={formData.bankName}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Account Holder"
-                        name="holderName"
-                        placeholder="e.g., Paresh, Harsha"
-                        value={formData.holderName}
-                        onChange={handleChange}
-                    />
-                </div>
-
                 <Input
-                    label="Initial Balance (₹)"
-                    name="initialBalance"
+                    label="Opening Balance (₹)"
+                    name="openingBalance"
                     type="number"
                     step="0.01"
                     placeholder="0.00"
-                    value={formData.initialBalance.toString()}
+                    value={formData.openingBalance.toString()}
                     onChange={handleChange}
-                    error={errors.initialBalance}
+                    error={errors.openingBalance}
                     helperText={isEditMode ? 'Changing this will adjust the current balance accordingly' : undefined}
                 />
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label
-                        htmlFor="description"
-                        style={{
-                            fontSize: 'var(--text-sm)',
-                            fontWeight: 500,
-                            color: 'var(--color-text)',
-                        }}
-                    >
-                        Description
-                    </label>
-                    <textarea
-                        id="description"
-                        name="description"
-                        placeholder="Optional notes about this account..."
-                        value={formData.description}
-                        onChange={handleChange}
-                        rows={3}
-                        style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            fontSize: 'var(--text-base)',
-                            fontFamily: 'var(--font-sans)',
-                            color: 'var(--color-text-heading)',
-                            backgroundColor: 'var(--color-bg-input)',
-                            border: '1px solid var(--color-border)',
-                            borderRadius: 'var(--radius-md)',
-                            outline: 'none',
-                            resize: 'vertical',
-                            transition: 'border-color var(--transition-fast)',
-                            boxSizing: 'border-box',
-                        }}
-                    />
-                </div>
 
                 {/* Actions */}
                 <div
