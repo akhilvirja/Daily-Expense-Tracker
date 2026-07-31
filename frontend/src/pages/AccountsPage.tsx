@@ -1,220 +1,208 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { AccountList } from '../components/accounts/AccountList';
-import { AccountForm } from '../components/accounts/AccountForm';
-import { Modal } from '../components/ui/Modal';
-import { Toast } from '../components/ui/Toast';
-import { accountApi } from '../api/accountApi';
-import type { Account, CreateAccountPayload, UpdateAccountPayload } from '../types';
+import React, { useState, useEffect, useCallback } from "react"
+import { AccountList } from "../components/accounts/AccountList"
+import { AccountForm } from "../components/accounts/AccountForm"
+import { Modal } from "../components/ui/Modal"
+import { Toast } from "../components/ui/Toast"
+import { Button } from "../components/ui/Button"
+import { accountApi } from "../api/accountApi"
+import type { Account, CreateAccountPayload, UpdateAccountPayload } from "../types"
+import { Plus } from "lucide-react"
 
 export const AccountsPage: React.FC = () => {
-    // State
-    const [accounts, setAccounts] = useState<Account[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isActionLoading, setIsActionLoading] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+  // State
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [isAccountsLoading, setIsAccountsLoading] = useState(true)
+  const [isActionLoading, setIsActionLoading] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
 
-    // Modal State
-    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-    const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  // Modal State
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
 
-    // Toast State
-    const [toast, setToast] = useState({
-        isVisible: false,
-        message: '',
-        type: 'info' as 'success' | 'error' | 'warning' | 'info',
-    });
+  // Toast State
+  const [toast, setToast] = useState({
+    isVisible: false,
+    message: "",
+    type: "info" as "success" | "error" | "warning" | "info",
+  })
 
-    const showToast = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
-        setToast({ isVisible: true, message, type });
-    };
+  const showToast = (message: string, type: "success" | "error" | "warning" | "info" = "info") => {
+    setToast({ isVisible: true, message, type })
+  }
 
-    // Fetch Accounts
-    const fetchAccounts = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const response = await accountApi.getAll();
-            if (response.success) {
-                setAccounts(response.data);
-            }
-        } catch (error: any) {
-            showToast(error.message || 'Failed to fetch accounts', 'error');
-        } finally {
-            setIsLoading(false);
+  // Fetch Accounts
+  const fetchAccounts = useCallback(async () => {
+    try {
+      setIsAccountsLoading(true)
+      const response = await accountApi.getAll()
+      if (response.success) {
+        setAccounts(response.data)
+      }
+    } catch (error: any) {
+      showToast(error.message || "Failed to fetch accounts", "error")
+    } finally {
+      setIsAccountsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchAccounts()
+  }, [fetchAccounts])
+
+  // Handlers for Accounts
+  const handleOpenAccountCreateModal = () => {
+    setSelectedAccount(null)
+    setIsAccountModalOpen(true)
+  }
+
+  const handleOpenAccountEditModal = (account: Account) => {
+    setSelectedAccount(account)
+    setIsAccountModalOpen(true)
+  }
+
+  const handleCloseAccountModal = () => {
+    setIsAccountModalOpen(false)
+    setSelectedAccount(null)
+  }
+
+  const handleAccountSubmit = async (payload: CreateAccountPayload | UpdateAccountPayload) => {
+    try {
+      setIsActionLoading(true)
+      if (selectedAccount) {
+        const response = await accountApi.update(selectedAccount.id, payload as UpdateAccountPayload)
+        if (response.success) {
+          showToast("Account updated successfully", "success")
+          fetchAccounts()
+          handleCloseAccountModal()
         }
-    }, []);
-
-    useEffect(() => {
-        fetchAccounts();
-    }, [fetchAccounts]);
-
-    // Handlers
-    const handleOpenCreateModal = () => {
-        setSelectedAccount(null);
-        setIsFormModalOpen(true);
-    };
-
-    const handleOpenEditModal = (account: Account) => {
-        setSelectedAccount(account);
-        setIsFormModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsFormModalOpen(false);
-        setSelectedAccount(null);
-    };
-
-    const handleFormSubmit = async (payload: CreateAccountPayload | UpdateAccountPayload) => {
-        try {
-            setIsActionLoading(true);
-            if (selectedAccount) {
-                // Update
-                const response = await accountApi.update(selectedAccount.id, payload as UpdateAccountPayload);
-                if (response.success) {
-                    showToast('Account updated successfully', 'success');
-                    fetchAccounts();
-                    handleCloseModal();
-                }
-            } else {
-                // Create
-                const response = await accountApi.create({ ...payload, isActive: true } as CreateAccountPayload);
-                if (response.success) {
-                    showToast('Account created successfully', 'success');
-                    fetchAccounts();
-                    handleCloseModal();
-                }
-            }
-        } catch (error: any) {
-            showToast(error.message || 'Action failed', 'error');
-        } finally {
-            setIsActionLoading(false);
+      } else {
+        const response = await accountApi.create({ ...payload, isActive: true } as CreateAccountPayload)
+        if (response.success) {
+          showToast("Account created successfully", "success")
+          fetchAccounts()
+          handleCloseAccountModal()
         }
-    };
+      }
+    } catch (error: any) {
+      showToast(error.message || "Action failed", "error")
+    } finally {
+      setIsActionLoading(false)
+    }
+  }
 
-    const handleDeleteAccount = async (account: Account) => {
-        if (account.currentBalance !== 0) {
-            showToast('Cannot delete account with a non-zero balance.', 'warning');
-            return;
+  const handleDeleteAccount = async (account: Account) => {
+    if (account.currentBalance !== 0) {
+      showToast("Cannot delete account with a non-zero balance.", "warning")
+      return
+    }
+
+    if (window.confirm(`Are you sure you want to delete "${account.name}"? This action cannot be undone.`)) {
+      try {
+        setIsActionLoading(true)
+        const response = await accountApi.delete(account.id)
+        if (response.success) {
+          showToast("Account deleted successfully", "success")
+          fetchAccounts()
         }
+      } catch (error: any) {
+        showToast(error.message || "Failed to delete account", "error")
+      } finally {
+        setIsActionLoading(false)
+      }
+    }
+  }
 
-        if (window.confirm(`Are you sure you want to delete "${account.name}"? This action cannot be undone.`)) {
-            try {
-                setIsActionLoading(true);
-                const response = await accountApi.delete(account.id);
-                if (response.success) {
-                    showToast('Account deleted successfully', 'success');
-                    fetchAccounts();
-                }
-            } catch (error: any) {
-                showToast(error.message || 'Failed to delete account', 'error');
-            } finally {
-                setIsActionLoading(false);
-            }
-        }
-    };
+  const handleToggleStatus = async (account: Account) => {
+    try {
+      const updatedIsActive = !account.isActive
+      setAccounts((prev) =>
+        prev.map((acc) => (acc.id === account.id ? { ...acc, isActive: updatedIsActive } : acc))
+      )
 
-    const handleToggleStatus = async (account: Account) => {
-        try {
-            const updatedIsActive = !account.isActive;
-            // Optimistic update
-            setAccounts(prev => prev.map(acc => acc.id === account.id ? { ...acc, isActive: updatedIsActive } : acc));
-            
-            const response = await accountApi.update(account.id, { isActive: updatedIsActive });
-            if (response.success) {
-                showToast(`Account ${updatedIsActive ? 'activated' : 'deactivated'} successfully`, 'success');
-            } else {
-                // Revert on failure
-                fetchAccounts();
-                showToast('Failed to update account status', 'error');
-            }
-        } catch (error: any) {
-            fetchAccounts(); // Revert on failure
-            showToast(error.message || 'Failed to update account status', 'error');
-        }
-    };
+      const response = await accountApi.update(account.id, { isActive: updatedIsActive })
+      if (response.success) {
+        showToast(`Account ${updatedIsActive ? "activated" : "archived"} successfully`, "success")
+      } else {
+        fetchAccounts()
+        showToast("Failed to update account status", "error")
+      }
+    } catch (error: any) {
+      fetchAccounts()
+      showToast(error.message || "Failed to update account status", "error")
+    }
+  }
 
-    // Filter accounts by search query
-    const filteredAccounts = accounts.filter(acc => 
-        acc.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  // Filter accounts
+  const displayedAccounts = accounts.filter((acc) => (showArchived ? true : acc.isActive))
 
-    return (
-        <div className="w-full max-w-[1200px] mx-auto px-4 py-6 sm:px-6 sm:py-8">
-            {/* Breadcrumb */}
-            <nav className="flex items-center gap-1.5 text-sm mb-6">
-                <span className="text-slate-400 hover:text-[#5B5CEF] cursor-pointer transition-colors">Dashboard</span>
-                <svg className="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                <span className="font-semibold text-slate-800">Ledger</span>
-            </nav>
-
-            {/* Header Section */}
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight mb-1">Ledger Management</h1>
-                    <p className="text-slate-400 text-sm">Manage all bank and cash accounts in one place.</p>
-                </div>
-                <button
-                    onClick={handleOpenCreateModal}
-                    className="inline-flex items-center gap-2 bg-[#5B5CEF] hover:bg-[#4a4be0] active:bg-[#3f40d4] text-white px-5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md flex-shrink-0 cursor-pointer"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 5v14" />
-                        <path d="M5 12h14" />
-                    </svg>
-                    Add Ledger
-                </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="mb-6">
-                <div className="relative w-full max-w-xs">
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 shadow-sm transition-all duration-200 focus:outline-none focus:border-[#5B5CEF] focus:ring-2 focus:ring-[#5B5CEF]/20"
-                        placeholder="Search accounts..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                </div>
-            </div>
-
-            {/* Account List */}
-            <AccountList
-                accounts={filteredAccounts}
-                isLoading={isLoading}
-                onEdit={handleOpenEditModal}
-                onDelete={handleDeleteAccount}
-                onToggleStatus={handleToggleStatus}
-            />
-
-            {/* Create/Edit Modal */}
-            <Modal
-                isOpen={isFormModalOpen}
-                onClose={handleCloseModal}
-                title={selectedAccount ? 'Edit Account' : 'Create New Account'}
-                size="md"
-            >
-                <AccountForm
-                    account={selectedAccount}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleCloseModal}
-                    isLoading={isActionLoading}
-                />
-            </Modal>
-
-            {/* Toast Notifications */}
-            <Toast
-                isVisible={toast.isVisible}
-                message={toast.message}
-                type={toast.type}
-                onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
-            />
+  return (
+    <div className="w-full">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+        <div>
+          <h2 className="font-display-lg text-display-lg text-on-background">Accounts</h2>
+          <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
+            Manage your wallets, banks, and tracking sources.
+          </p>
         </div>
-    );
-};
+      </div>
+
+      {/* Main Content Area */}
+      <section className="space-y-6">
+        <div className="flex justify-between items-center bg-surface-container-lowest p-4 rounded-xl border border-outline-variant">
+          <div className="flex items-center gap-4">
+            <span className="font-body-lg text-body-lg text-on-surface font-medium">
+              Total Accounts ({accounts.length})
+            </span>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showArchived}
+                onChange={(e) => setShowArchived(e.target.checked)}
+                className="w-4 h-4 rounded text-primary focus:ring-primary border-outline"
+              />
+              <span className="font-body-sm text-body-sm text-on-surface-variant">
+                Show Archived
+              </span>
+            </label>
+          </div>
+          <Button onClick={handleOpenAccountCreateModal} icon={<Plus size={16} />}>
+            Add Account
+          </Button>
+        </div>
+
+        {/* Account Grid */}
+        <AccountList
+          accounts={displayedAccounts}
+          isLoading={isAccountsLoading}
+          onEdit={handleOpenAccountEditModal}
+          onDelete={handleDeleteAccount}
+          onToggleStatus={handleToggleStatus}
+        />
+      </section>
+
+      {/* Account Create/Edit Modal */}
+      <Modal
+        isOpen={isAccountModalOpen}
+        onClose={handleCloseAccountModal}
+        title={selectedAccount ? "Edit Account" : "Add New Account"}
+        size="md"
+      >
+        <AccountForm
+          account={selectedAccount}
+          onSubmit={handleAccountSubmit}
+          onCancel={handleCloseAccountModal}
+          isLoading={isActionLoading}
+        />
+      </Modal>
+
+      {/* Toast Notifications */}
+      <Toast
+        isVisible={toast.isVisible}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast((prev) => ({ ...prev, isVisible: false }))}
+      />
+    </div>
+  )
+}

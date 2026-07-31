@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import type { Account, ApiResponse, CreateAccountPayload, UpdateAccountPayload } from '../types';
+import type { ApiResponse, Account, CreateAccountPayload, UpdateAccountPayload } from '../types';
 
 /**
  * Account API — Handles all HTTP requests for the Account module.

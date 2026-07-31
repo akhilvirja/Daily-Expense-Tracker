@@ -18,7 +18,7 @@ export const validate = (schema) => {
             return res.status(STATUS_CODES.BAD_REQUEST).json({
                 success: false,
                 message: STATUS_MESSAGES.ERROR.VALIDATION_ERROR,
-                errors: result.error.errors.map((e) => ({
+                errors: result.error.issues.map((e) => ({
                     field: e.path.join('.'),
                     message: e.message,
                 })),
@@ -46,7 +46,7 @@ export const validateQuery = (schema) => {
             return res.status(STATUS_CODES.BAD_REQUEST).json({
                 success: false,
                 message: STATUS_MESSAGES.ERROR.VALIDATION_ERROR,
-                errors: result.error.errors.map((e) => ({
+                errors: result.error.issues.map((e) => ({
                     field: e.path.join('.'),
                     message: e.message,
                 })),

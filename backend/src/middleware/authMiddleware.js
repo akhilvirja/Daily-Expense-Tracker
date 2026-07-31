@@ -35,7 +35,11 @@ export const authenticate = async (req, res, next) => {
             req.user = user;
             next();
         } catch (error) {
-            console.error('Auth Middleware Error:', error);
+            if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+                console.warn(`Auth Middleware: ${error.message}`);
+            } else {
+                console.error('Auth Middleware Error:', error);
+            }
             return sendError(res, STATUS_CODES.UNAUTHORIZED, STATUS_MESSAGES.ERROR.UNAUTHORIZED, [{ field: 'auth', message: 'Not authorized, token failed' }]);
         }
     }
