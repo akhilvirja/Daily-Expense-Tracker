@@ -63,3 +63,75 @@ export interface UpdateAccountPayload {
     openingBalance?: number;
     isActive?: boolean;
 }
+
+// ============================================
+// Module 2: Category Types
+// ============================================
+
+export interface Category {
+    id: string;
+    userId: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string | null;
+    deletedAt: string | null;
+}
+
+export interface CreateCategoryPayload {
+    name: string;
+}
+
+export interface UpdateCategoryPayload {
+    name: string;
+}
+
+// ============================================
+// Module 3: Transaction Types
+// ============================================
+
+export type TxnType = 'credit' | 'debit';
+
+export interface Transaction {
+    id: string;
+    userId: string;
+    accountId: string;
+    categoryId: string | null;
+    type: TxnType;
+    amount: number;
+    description: string | null;
+    occurredOn: string;
+    billId: string | null;
+    createdAt: string;
+    updatedAt: string | null;
+    
+    // Relations (Populated by API)
+    account?: {
+        id: string;
+        name: string;
+        kind: AccountKind;
+    };
+    category?: {
+        id: string;
+        name: string;
+    };
+}
+
+export interface CreateTransactionPayload {
+    accountId: string;
+    categoryId?: string;
+    type: TxnType;
+    amount: number;
+    description?: string;
+    occurredOn: string;
+    billId?: string;
+}
+
+export interface UpdateTransactionPayload {
+    accountId?: string;
+    categoryId?: string;
+    type?: TxnType;
+    amount?: number;
+    description?: string;
+    occurredOn?: string;
+    billId?: string;
+}

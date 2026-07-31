@@ -20,7 +20,7 @@ export const getCategories = asyncHandler(async (req, res) => {
     },
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, STATUS_MESSAGES.SUCCESS, categories);
+  return sendSuccess(res, STATUS_CODES.OK, categories, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
@@ -79,7 +79,7 @@ export const createCategory = asyncHandler(async (req, res) => {
         },
       });
     }
-    return sendSuccess(res, STATUS_CODES.CREATED, 'Category created successfully', category);
+    return sendSuccess(res, STATUS_CODES.CREATED, category, 'Category created successfully');
   } catch (error) {
     if (error.code === 'P2002') {
       return sendError(res, STATUS_CODES.BAD_REQUEST, 'A category with this name already exists');
@@ -108,7 +108,7 @@ export const getCategory = asyncHandler(async (req, res) => {
     return sendError(res, STATUS_CODES.NOT_FOUND, 'Category not found');
   }
 
-  return sendSuccess(res, STATUS_CODES.OK, STATUS_MESSAGES.SUCCESS, category);
+  return sendSuccess(res, STATUS_CODES.OK, category, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
@@ -155,7 +155,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
     data: { name },
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, 'Category updated successfully', updatedCategory);
+  return sendSuccess(res, STATUS_CODES.OK, updatedCategory, 'Category updated successfully');
 });
 
 /**
@@ -196,5 +196,5 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     },
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, 'Category deleted successfully', null);
+  return sendSuccess(res, STATUS_CODES.OK, null, 'Category deleted successfully');
 });
