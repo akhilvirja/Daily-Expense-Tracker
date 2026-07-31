@@ -36,7 +36,7 @@ export const getTransactions = asyncHandler(async (req, res) => {
     }
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, STATUS_MESSAGES.SUCCESS, transactions);
+  return sendSuccess(res, STATUS_CODES.OK, transactions, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
@@ -82,7 +82,7 @@ export const createTransaction = asyncHandler(async (req, res) => {
     }
   });
 
-  return sendSuccess(res, STATUS_CODES.CREATED, 'Transaction created successfully', transaction);
+  return sendSuccess(res, STATUS_CODES.CREATED, transaction, 'Transaction created successfully');
 });
 
 /**
@@ -108,7 +108,7 @@ export const getTransaction = asyncHandler(async (req, res) => {
     return sendError(res, STATUS_CODES.NOT_FOUND, 'Transaction not found');
   }
 
-  return sendSuccess(res, STATUS_CODES.OK, STATUS_MESSAGES.SUCCESS, transaction);
+  return sendSuccess(res, STATUS_CODES.OK, transaction, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**
@@ -169,7 +169,7 @@ export const updateTransaction = asyncHandler(async (req, res) => {
     }
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, 'Transaction updated successfully', updatedTransaction);
+  return sendSuccess(res, STATUS_CODES.OK, updatedTransaction, 'Transaction updated successfully');
 });
 
 /**
@@ -196,5 +196,5 @@ export const deleteTransaction = asyncHandler(async (req, res) => {
     where: { id },
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, 'Transaction deleted successfully', null);
+  return sendSuccess(res, STATUS_CODES.OK, null, 'Transaction deleted successfully');
 });
