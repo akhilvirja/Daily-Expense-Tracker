@@ -13,6 +13,7 @@ export interface Bill {
   paidOn: string | null;
   item: { name: string; unit: string };
   paidAccount?: { name: string };
+  createdAt: string;
 }
 
 export const billApi = {

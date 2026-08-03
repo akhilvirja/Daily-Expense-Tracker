@@ -78,6 +78,11 @@ const BillingPage: React.FC = () => {
     return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
+  const formatDurationDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
   return (
     <>
       <div className="flex flex-col gap-6 max-w-7xl mx-auto h-full">
@@ -115,7 +120,8 @@ const BillingPage: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-surface-container-low border-b border-outline-variant">
-                  <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Period</th>
+                  <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Generated On</th>
+                  <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Billing Period</th>
                   <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Item / Tracker</th>
                   <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Qty</th>
                   <th className="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Total Amount</th>
@@ -126,7 +132,7 @@ const BillingPage: React.FC = () => {
               <tbody className="font-body-sm text-body-sm">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-on-surface-variant">
+                    <td colSpan={7} className="px-4 py-8 text-center text-on-surface-variant">
                       Loading bills...
                     </td>
                   </tr>
@@ -134,7 +140,10 @@ const BillingPage: React.FC = () => {
                   filteredBills.map((bill) => (
                     <tr key={bill.id} className="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
                       <td className="px-4 py-4 text-on-surface-variant font-medium whitespace-nowrap">
-                        {formatDate(bill.periodStart)}
+                        {formatDurationDate(bill.createdAt)}
+                      </td>
+                      <td className="px-4 py-4 text-on-surface-variant text-xs whitespace-nowrap">
+                        {formatDurationDate(bill.periodStart)} - {formatDurationDate(bill.periodEnd)}
                       </td>
                       <td className="px-4 py-4">
                         <div className="font-title-md text-title-md text-on-surface">{bill.item.name}</div>
@@ -183,7 +192,7 @@ const BillingPage: React.FC = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-4 py-12 text-center text-on-surface-variant">
+                    <td colSpan={7} className="px-4 py-12 text-center text-on-surface-variant">
                       No bills found.
                     </td>
                   </tr>

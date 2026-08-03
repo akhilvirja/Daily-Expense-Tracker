@@ -10,6 +10,7 @@ export interface TrackerItem {
 
 export interface TrackerLog {
   id: string;
+  logDate: string;
   quantity: number;
   amount: number;
   note: string | null;

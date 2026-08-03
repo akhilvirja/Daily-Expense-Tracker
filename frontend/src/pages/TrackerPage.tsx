@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { trackerApi } from '../api/trackerApi';
 import type { TrackerItem, TrackerLog } from '../api/trackerApi';
 import TrackerItemModal from '../components/trackers/TrackerItemModal';
-import { Plus, Calendar, Receipt, Save, History } from 'lucide-react';
+import { Plus, Calendar, Receipt, Save, History, Edit2 } from 'lucide-react';
+import Button from '../components/ui/Button';
 
 const TrackerPage: React.FC = () => {
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -39,8 +40,8 @@ const TrackerPage: React.FC = () => {
       // Find log for current date
       const todayLog = logs.find(l => l.logDate.startsWith(date));
       if (todayLog) {
-        setCurrentQuantity(todayLog.quantity);
-        setCurrentAmount(todayLog.amount);
+        setCurrentQuantity(Number(todayLog.quantity));
+        setCurrentAmount(Number(todayLog.amount));
       } else {
         setCurrentQuantity(0);
         setCurrentAmount(0);
@@ -98,7 +99,7 @@ const TrackerPage: React.FC = () => {
   };
 
   const handleQuantityChange = (delta: number) => {
-    const newQ = Math.max(0, currentQuantity + delta);
+    const newQ = Math.max(0, Number(currentQuantity) + delta);
     setCurrentQuantity(newQ);
     if (selectedItem?.price) {
       setCurrentAmount(newQ * Number(selectedItem.price));
@@ -115,187 +116,238 @@ const TrackerPage: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="flex flex-col lg:flex-row gap-8 h-full">
-        {/* Left Column: Item Master */}
-        <section className="flex-1 lg:max-w-md flex flex-col gap-4">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Item Master</h2>
-            <button 
-              onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
-              className="bg-primary text-on-primary h-10 px-4 rounded-lg font-body-sm text-body-sm flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm hover:shadow-md"
-            >
-              <Plus size={18} />
-              Add Item
-            </button>
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] bg-surface rounded-xl border border-surface-container-highest shadow-sm lg:overflow-hidden">
+      {/* Left Sidebar: Item Master (Fixed Width on Desktop) */}
+      <section className="w-full lg:w-[350px] xl:w-[400px] flex-shrink-0 flex flex-col border-b lg:border-b-0 lg:border-r border-surface-container-highest bg-surface-container-lowest max-h-[45vh] lg:max-h-none">
+        {/* Sidebar Header */}
+        <div className="px-4 border-b border-surface-container-highest flex justify-between items-center bg-surface-container-lowest z-10 sticky top-0 min-h-[72px] lg:h-[72px]">
+          <h2 className="text-xl font-bold text-on-surface">Item Master</h2>
+          <Button 
+            size="sm"
+            onClick={() => { setSelectedItem(null); setIsModalOpen(true); }}
+            icon={<Plus size={16} />}
+          >
+            Add Item
+          </Button>
+        </div>
+        
+        {/* Item List */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-6 lg:pb-8">
+          {items.map(item => {
+            const isSelected = selectedItem?.id === item.id;
+            return (
+              <div 
+                key={item.id} 
+                className={`relative overflow-hidden rounded-xl p-4 transition-all duration-200 cursor-pointer group ${
+                  isSelected 
+                    ? 'bg-primary/5 border border-primary/30 shadow-sm' 
+                    : 'bg-surface border border-outline-variant hover:border-outline hover:shadow-md'
+                }`}
+                onClick={() => setSelectedItem(item)}
+              >
+                {/* Selection Indicator Bar */}
+                {isSelected && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary" />
+                )}
+                
+                <div className="flex justify-between items-start mb-2">
+                  <div className="pr-4">
+                    <h3 className={`font-semibold ${isSelected ? 'text-primary' : 'text-on-surface'} group-hover:text-primary transition-colors line-clamp-1`}>
+                      {item.name}
+                    </h3>
+                  </div>
+                  <Button 
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsModalOpen(true); }}
+                    icon={<Edit2 size={16} />}
+                    className="!px-2 h-8 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded-full"
+                    title="Edit Item"
+                  />
+                </div>
+                
+                <div className="flex justify-between items-end mt-3">
+                  <span className="text-xs font-medium text-on-surface-variant bg-surface-container px-2 py-1 rounded-md">
+                    {item.unit}
+                  </span>
+                  <span className="text-sm font-bold text-on-surface">
+                    {item.price ? `₹${Number(item.price).toFixed(2)}` : 'N/A'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+          
+          {items.length === 0 && (
+            <div className="text-center p-8 text-on-surface-variant border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center gap-3">
+              <Plus size={32} className="text-outline" />
+              <p className="text-sm">No items found. Add your first item!</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Right Content: Daily Logs */}
+      <section className="flex-1 flex flex-col min-w-0 bg-surface">
+        {/* Header Toolbar */}
+        <div className="px-4 py-3 lg:py-0 lg:px-8 border-b border-surface-container-highest flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest sticky top-0 z-10 min-h-[72px] lg:h-[72px]">
+          <div>
+            <h2 className="text-2xl font-bold text-on-surface hidden sm:block">Daily Logs</h2>
           </div>
           
-          <div className="grid grid-cols-1 gap-4 overflow-y-auto pr-2 pb-20">
-            {items.map(item => {
-              const isSelected = selectedItem?.id === item.id;
-              return (
-                <div 
-                  key={item.id} 
-                  className={`bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:shadow-sm transition-shadow group cursor-pointer ${
-                    isSelected ? 'ring-2 ring-primary bg-primary-container/5' : ''
-                  }`}
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h3 className="font-title-md text-title-md text-on-surface">{item.name}</h3>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant cursor-pointer hover:underline" onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsModalOpen(true); }}>Click to edit</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-end border-t border-surface-container-highest pt-3 mt-2">
-                    <div className="flex flex-col">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant">UNIT</span>
-                      <span className="font-body-sm text-body-sm text-on-surface">{item.unit}</span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="font-label-caps text-label-caps text-on-surface-variant">PRICE</span>
-                      <span className="font-tabular-nums text-tabular-nums text-on-surface font-semibold">
-                        {item.price ? `₹${Number(item.price).toFixed(2)}` : 'N/A'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            
-            {items.length === 0 && (
-              <div className="text-center p-8 text-on-surface-variant border border-dashed border-outline-variant rounded-xl">
-                No items found. Add your first item!
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Right Column: Daily Logs */}
-        <section className="flex-[2] flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-4">
-            <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Daily Logs</h2>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="relative flex-1 sm:flex-none">
-                <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-                <input 
-                  type="date" 
-                  value={date}
-                  onChange={handleDateChange}
-                  className="pl-10 pr-4 h-10 w-full rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary"
-                />
-              </div>
-              <button className="bg-surface-container-highest text-on-surface h-10 px-4 rounded-lg font-body-sm text-body-sm whitespace-nowrap hover:bg-surface-variant transition-colors border border-outline-variant">
-                Copy Prev
-              </button>
+          <div className="flex items-center justify-end gap-3 w-full sm:w-auto">
+            <div className="relative flex-1 sm:flex-none sm:w-[180px]">
+              <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+              <input 
+                type="date" 
+                value={date}
+                onChange={handleDateChange}
+                className="w-full pl-10 pr-3 py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm"
+              />
             </div>
-          </div>
 
+            <Button icon={<Receipt size={16} />} className="flex-1 sm:flex-none">
+              <span className="hidden lg:inline">Generate Bill</span>
+              <span className="lg:hidden">Bill</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 pb-24 lg:pb-8">
           {!selectedItem ? (
-            <div className="flex-1 flex items-center justify-center bg-surface-container-lowest rounded-xl border border-outline-variant p-8 shadow-sm">
-              <div className="text-center text-on-surface-variant">
-                <p className="font-title-md text-title-md mb-2">No Item Selected</p>
-                <p className="font-body-sm text-body-sm">Select an item from the left to view and edit its logs.</p>
+            <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto">
+              <div className="w-20 h-20 bg-surface-container rounded-full flex items-center justify-center mb-6">
+                <Receipt size={40} className="text-on-surface-variant/50" />
               </div>
+              <h3 className="text-xl font-bold text-on-surface mb-2">No Item Selected</h3>
+              <p className="text-on-surface-variant">Select an item from the sidebar to start logging quantities and amounts for the selected date.</p>
             </div>
           ) : (
-            <>
-              {/* Logging Form */}
-              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm">
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                  <div className="flex-1">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant block mb-1">LOGGING FOR</span>
-                    <h3 className="font-headline-lg text-headline-lg text-on-surface">{selectedItem.name}</h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      {selectedItem.price ? `₹${Number(selectedItem.price).toFixed(2)} / ${selectedItem.unit}` : `Unit: ${selectedItem.unit}`}
-                    </p>
+            <div className="max-w-4xl mx-auto space-y-6 w-full">
+              {/* Logging Form Card */}
+              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 lg:p-6 shadow-sm w-full">
+                <div className="flex justify-between items-center mb-5 border-b border-surface-container-highest pb-4">
+                  <div>
+                    <span className="text-xs font-bold tracking-wider text-primary uppercase mb-1 block">Logging For</span>
+                    <h3 className="text-2xl font-bold text-on-surface leading-tight">{selectedItem.name}</h3>
                   </div>
-                  <div className="flex flex-col items-center gap-3">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant">QUANTITY</span>
-                    <div className="flex items-center border border-outline-variant rounded-full overflow-hidden h-12 bg-surface-container-low">
+                  <div className="text-right">
+                     <span className="text-sm text-on-surface-variant font-medium bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/50">
+                      {selectedItem.price ? `₹${Number(selectedItem.price).toFixed(2)} / ${selectedItem.unit}` : `Unit: ${selectedItem.unit}`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-end gap-4 lg:gap-6 w-full">
+                  {/* Quantity Stepper */}
+                  <div className="flex flex-col gap-1.5 w-full sm:flex-[1.2]">
+                    <label className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider pl-1">Quantity</label>
+                    <div className="flex items-center bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-sm h-12 w-full transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
                       <button 
                         onClick={() => handleQuantityChange(-1)}
-                        className="px-4 text-on-surface-variant hover:bg-surface-container transition-colors text-xl"
+                        className="w-14 h-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-colors active:bg-surface-variant"
                       >
-                        -
+                        <span className="text-2xl font-light">-</span>
                       </button>
-                      <input 
-                        type="number" 
-                        value={currentQuantity}
-                        readOnly
-                        className="w-16 text-center border-none bg-transparent p-0 h-full font-tabular-nums text-xl text-on-surface focus:ring-0" 
-                      />
+                      <div className="flex-1 h-full border-x border-outline-variant">
+                        <input 
+                          type="number" 
+                          value={currentQuantity}
+                          readOnly
+                          className="w-full h-full text-center bg-transparent text-lg font-bold text-on-surface focus:outline-none" 
+                        />
+                      </div>
                       <button 
                         onClick={() => handleQuantityChange(1)}
-                        className="px-4 text-on-surface-variant hover:bg-surface-container transition-colors text-xl"
+                        className="w-14 h-full flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-colors active:bg-surface-variant"
                       >
-                        +
+                        <span className="text-2xl font-light">+</span>
                       </button>
                     </div>
                   </div>
-                  <div className="text-right flex flex-col items-end">
-                    <span className="font-label-caps text-label-caps text-on-surface-variant block mb-1">TOTAL FOR DAY</span>
-                    <div className="flex items-center">
-                      <span className="font-tabular-nums text-primary font-bold text-3xl mr-1">₹</span>
+
+                  {/* Total Amount */}
+                  <div className="flex flex-col gap-1.5 w-full sm:flex-[2]">
+                    <label className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider pl-1">Total Amount</label>
+                    <div className="flex items-center bg-surface border border-outline-variant rounded-xl px-4 h-12 w-full shadow-sm transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+                      <span className="text-xl font-bold text-primary mr-2">₹</span>
                       <input
                         type="number"
                         step="0.01"
                         value={currentAmount}
                         onChange={handleAmountChange}
-                        className="w-24 text-right border-none bg-transparent p-0 font-tabular-nums text-primary font-bold text-3xl focus:ring-0 focus:border-b focus:border-primary"
+                        className="w-full text-right bg-transparent text-2xl font-black text-on-surface focus:outline-none"
                       />
                     </div>
                   </div>
-                </div>
-                <div className="mt-6 pt-6 border-t border-surface-container-highest flex justify-end">
-                  <button 
-                    onClick={handleSaveEntry}
-                    disabled={isSavingLog}
-                    className="bg-primary text-on-primary h-10 px-6 rounded-lg font-body-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 disabled:opacity-70"
-                  >
-                    <Save size={18} />
-                    {isSavingLog ? 'Saving...' : 'Save Entry'}
-                  </button>
+
+                  {/* Save Button */}
+                  <div className="w-full sm:flex-[1]">
+                    <Button 
+                      size="lg"
+                      onClick={handleSaveEntry}
+                      isLoading={isSavingLog}
+                      icon={!isSavingLog ? <Save size={18} /> : undefined}
+                      fullWidth
+                    >
+                      {isSavingLog ? 'Saving...' : 'Save'}
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               {/* Recent Logs List */}
-              <div className="mt-4">
-                <h4 className="font-label-caps text-label-caps text-on-surface-variant mb-3 px-1">Recent Logs</h4>
-                <div className="bg-surface-container-lowest rounded-xl border border-outline-variant divide-y divide-surface-container-highest">
+              <div>
+                <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <History size={16} />
+                  Recent Logs
+                </h4>
+                <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
                   {isLoadingLogs ? (
-                    <div className="p-4 text-center text-on-surface-variant">Loading logs...</div>
+                    <div className="p-8 text-center text-on-surface-variant flex flex-col items-center gap-3">
+                      <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                      <p className="text-sm">Loading history...</p>
+                    </div>
                   ) : recentLogs.length > 0 ? (
-                    recentLogs.map(log => {
-                      const logDateStr = new Date(log.logDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                      return (
-                        <div key={log.id} className="p-4 flex justify-between items-center hover:bg-surface-bright transition-colors">
-                          <div className="flex items-center gap-3">
-                            <History size={18} className="text-on-surface-variant" />
-                            <span className="font-body-lg text-body-lg text-on-surface">{logDateStr}</span>
+                    <div className="divide-y divide-surface-container-highest">
+                      {recentLogs.map(log => {
+                        const isToday = log.logDate.startsWith(date);
+                        const logDateStr = new Date(log.logDate).toLocaleDateString('en-US', { 
+                          weekday: 'short', month: 'short', day: 'numeric' 
+                        });
+                        return (
+                          <div key={log.id} className={`p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 transition-colors hover:bg-surface-container-lowest/50 ${isToday ? 'bg-primary/5' : ''}`}>
+                            <div className="flex items-center gap-3">
+                              <div className={`w-2 h-2 rounded-full ${isToday ? 'bg-primary' : 'bg-outline-variant'}`} />
+                              <span className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-on-surface'}`}>
+                                {isToday ? 'Selected Date (' + logDateStr + ')' : logDateStr}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between sm:justify-end gap-6 pl-5 sm:pl-0">
+                              <span className="text-sm font-medium text-on-surface-variant">
+                                {log.quantity} <span className="text-xs uppercase">{selectedItem.unit}{log.quantity !== 1 && !selectedItem.unit.endsWith('s') ? 's' : ''}</span>
+                              </span>
+                              <span className="text-base font-bold text-on-surface">
+                                ₹{Number(log.amount).toFixed(2)}
+                              </span>
+                            </div>
                           </div>
-                          <span className="font-tabular-nums text-body-lg text-on-surface-variant">
-                            {log.quantity} {selectedItem.unit}{log.quantity !== 1 && !selectedItem.unit.endsWith('s') ? 's' : ''} — <span className="text-on-surface font-semibold">₹{Number(log.amount).toFixed(2)}</span>
-                          </span>
-                        </div>
-                      );
-                    })
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <div className="p-4 text-center text-on-surface-variant">No recent logs found.</div>
+                    <div className="p-8 text-center text-on-surface-variant flex flex-col items-center gap-2">
+                      <History size={24} className="text-outline" />
+                      <p className="text-sm">No recent logs found for this item.</p>
+                    </div>
                   )}
                 </div>
               </div>
-
-              <div className="mt-8 flex justify-end">
-                <button className="bg-surface-container-highest text-on-surface h-12 px-8 rounded-xl font-title-md text-title-md flex items-center gap-3 hover:bg-surface-variant transition-colors border border-outline-variant w-full sm:w-auto shadow-sm">
-                  <Receipt size={24} />
-                  Generate Bill & Select Date Range
-                </button>
-              </div>
-            </>
+            </div>
           )}
-        </section>
-      </div>
+        </div>
+      </section>
 
       <TrackerItemModal 
         isOpen={isModalOpen}
@@ -303,7 +355,7 @@ const TrackerPage: React.FC = () => {
         onSave={handleSaveItem}
         item={selectedItem}
       />
-    </>
+    </div>
   );
 };
 
