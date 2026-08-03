@@ -1,24 +1,40 @@
 import prisma from '../config/db.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { sendSuccess, sendError } from '../utils/response.js';
+import { sendSuccess, sendError, sendPaginatedSuccess } from '../utils/response.js';
+import { getPaginationParams, getPaginationMeta } from '../utils/pagination.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
 
 /**
- * @desc    Get all bills for the authenticated user
+ * @desc    Get all bills for the authenticated user (with pagination & status filter)
  * @route   GET /api/v1/bills
  * @access  Private
  */
 export const getBills = asyncHandler(async (req, res) => {
-  const bills = await prisma.bill.findMany({
-    where: { userId: req.user.id },
-    include: {
-      item: { select: { name: true, unit: true } },
-      paidAccount: { select: { name: true } },
-    },
-    orderBy: { periodStart: 'desc' },
-  });
+  const { status } = req.query;
+  const { page, limit, skip } = getPaginationParams(req.query, { page: 1, limit: 10 });
 
-  return sendSuccess(res, STATUS_CODES.OK, bills, 'Bills fetched successfully');
+  const filter = { userId: req.user.id };
+  if (status && status !== 'All' && status !== 'all') {
+    filter.status = status.toLowerCase();
+  }
+
+  const [total, bills] = await Promise.all([
+    prisma.bill.count({ where: filter }),
+    prisma.bill.findMany({
+      where: filter,
+      skip,
+      take: limit,
+      include: {
+        item: { select: { name: true, unit: true } },
+        paidAccount: { select: { name: true } },
+      },
+      orderBy: { periodStart: 'desc' },
+    }),
+  ]);
+
+  const pagination = getPaginationMeta(total, page, limit);
+
+  return sendPaginatedSuccess(res, STATUS_CODES.OK, bills, pagination, 'Bills fetched successfully');
 });
 
 /**

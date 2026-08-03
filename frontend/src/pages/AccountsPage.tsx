@@ -138,10 +138,10 @@ export const AccountsPage: React.FC = () => {
   return (
     <div className="w-full">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6 md:mb-8">
         <div>
-          <h2 className="font-display-lg text-display-lg text-on-background">Accounts</h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
+          <h2 className="font-display-lg text-headline-lg-mobile md:text-display-lg text-on-background font-bold">Accounts</h2>
+          <p className="font-body-lg text-body-sm md:text-body-lg text-on-surface-variant mt-1">
             Manage your wallets, banks, and tracking sources.
           </p>
         </div>
@@ -149,24 +149,28 @@ export const AccountsPage: React.FC = () => {
 
       {/* Main Content Area */}
       <section className="space-y-6">
-        <div className="flex justify-between items-center bg-surface-container-lowest p-4 rounded-xl border border-outline-variant">
-          <div className="flex items-center gap-4">
-            <span className="font-body-lg text-body-lg text-on-surface font-medium">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant">
+          <div className="flex flex-wrap items-center justify-between sm:justify-start gap-3 sm:gap-6">
+            <span className="font-body-lg text-body-lg text-on-surface font-medium whitespace-nowrap">
               Total Accounts ({accounts.length})
             </span>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={showArchived}
                 onChange={(e) => setShowArchived(e.target.checked)}
-                className="w-4 h-4 rounded text-primary focus:ring-primary border-outline"
+                className="w-4 h-4 rounded text-primary focus:ring-primary border-outline cursor-pointer"
               />
-              <span className="font-body-sm text-body-sm text-on-surface-variant">
+              <span className="font-body-sm text-body-sm text-on-surface-variant whitespace-nowrap">
                 Show Inactive Accounts
               </span>
             </label>
           </div>
-          <Button onClick={handleOpenAccountCreateModal} icon={<Plus size={16} />}>
+          <Button 
+            onClick={handleOpenAccountCreateModal} 
+            icon={<Plus size={16} />}
+            className="w-full sm:w-auto"
+          >
             Add Account
           </Button>
         </div>

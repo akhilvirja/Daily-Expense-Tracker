@@ -1,6 +1,7 @@
 import prisma from '../config/db.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { sendSuccess, sendError } from '../utils/response.js';
+import { sendSuccess, sendError, sendPaginatedSuccess } from '../utils/response.js';
+import { getPaginationParams, getPaginationMeta } from '../utils/pagination.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
 
 /**
@@ -122,12 +123,13 @@ export const upsertTrackerLog = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Get recent logs for a specific tracker item
+ * @desc    Get recent logs for a specific tracker item (with pagination)
  * @route   GET /api/v1/trackers/logs/item/:itemId
  * @access  Private
  */
 export const getRecentLogsByItem = asyncHandler(async (req, res) => {
   const { itemId } = req.params;
+  const { page, limit, skip } = getPaginationParams(req.query, { page: 1, limit: 10 });
 
   // Validate the item belongs to the user
   const item = await prisma.trackerItem.findUnique({
@@ -138,19 +140,25 @@ export const getRecentLogsByItem = asyncHandler(async (req, res) => {
     return sendError(res, STATUS_CODES.NOT_FOUND, 'Tracker item not found');
   }
 
-  // Fetch the last 10 logs for this item
-  const recentLogsRaw = await prisma.trackerLog.findMany({
-    where: {
-      itemId,
-    },
-    orderBy: {
-      logDate: 'desc',
-    },
-    take: 10,
-    include: {
-      bill: true,
-    }
-  });
+  // Count total logs and fetch paginated logs
+  const [total, recentLogsRaw] = await Promise.all([
+    prisma.trackerLog.count({
+      where: { itemId },
+    }),
+    prisma.trackerLog.findMany({
+      where: {
+        itemId,
+      },
+      orderBy: {
+        logDate: 'desc',
+      },
+      skip,
+      take: limit,
+      include: {
+        bill: true,
+      }
+    }),
+  ]);
 
   const recentLogs = recentLogsRaw.map(log => {
     let status = 'unbilled';
@@ -166,5 +174,7 @@ export const getRecentLogsByItem = asyncHandler(async (req, res) => {
     };
   });
 
-  return sendSuccess(res, STATUS_CODES.OK, recentLogs, 'Recent logs fetched successfully');
+  const pagination = getPaginationMeta(total, page, limit);
+
+  return sendPaginatedSuccess(res, STATUS_CODES.OK, recentLogs, pagination, 'Recent logs fetched successfully');
 });

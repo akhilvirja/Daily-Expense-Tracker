@@ -7,18 +7,42 @@ interface DailyLogRowProps {
   onUpdate: (itemId: string, quantity: number, amount: number) => Promise<void>;
 }
 
+const renderLogStatusBadge = (status?: string) => {
+  switch (status) {
+    case 'billed_paid':
+      return (
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full font-label-caps text-label-caps bg-secondary-container text-on-secondary-container font-semibold uppercase tracking-wider">
+          Paid
+        </span>
+      );
+    case 'billed_unpaid':
+      return (
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full font-label-caps text-label-caps bg-error-container text-on-error-container font-semibold uppercase tracking-wider">
+          Billed (Unpaid)
+        </span>
+      );
+    case 'unbilled':
+    default:
+      return (
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full font-label-caps text-label-caps bg-surface-container-high text-on-surface-variant font-medium uppercase tracking-wider">
+          Unbilled
+        </span>
+      );
+  }
+};
+
 const DailyLogRow: React.FC<DailyLogRowProps> = ({ item, logDate, onUpdate }) => {
   const initialQuantity = item.log ? item.log.quantity : 0;
   const initialAmount = item.log ? item.log.amount : 0;
 
-  const [quantity, setQuantity] = useState<number>(initialQuantity);
-  const [amount, setAmount] = useState<number>(initialAmount);
+  const [quantity, setQuantity] = useState<number>(Number(initialQuantity));
+  const [amount, setAmount] = useState<number>(Number(initialAmount));
   const [isUpdating, setIsUpdating] = useState(false);
   
   // Sync state if props change (e.g. date changes)
   useEffect(() => {
-    setQuantity(item.log ? item.log.quantity : 0);
-    setAmount(item.log ? item.log.amount : 0);
+    setQuantity(item.log ? Number(item.log.quantity) : 0);
+    setAmount(item.log ? Number(item.log.amount) : 0);
   }, [item, logDate]);
 
   const handleUpdate = async (newQuantity: number) => {
@@ -51,13 +75,13 @@ const DailyLogRow: React.FC<DailyLogRowProps> = ({ item, logDate, onUpdate }) =>
   };
 
   const handleAmountBlur = async () => {
-    if (amount !== (item.log ? item.log.amount : 0)) {
+    if (amount !== (item.log ? Number(item.log.amount) : 0)) {
       try {
         setIsUpdating(true);
         await onUpdate(item.itemId, quantity, amount);
       } catch (error) {
         console.error('Failed to update amount', error);
-        setAmount(item.log ? item.log.amount : 0);
+        setAmount(item.log ? Number(item.log.amount) : 0);
       } finally {
         setIsUpdating(false);
       }
@@ -67,7 +91,10 @@ const DailyLogRow: React.FC<DailyLogRowProps> = ({ item, logDate, onUpdate }) =>
   return (
     <div className={`flex flex-col sm:grid sm:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-bright transition-colors ${isUpdating ? 'opacity-70' : ''}`}>
       <div className="col-span-5 w-full">
-        <p className="font-body-lg text-body-lg text-on-surface font-medium">{item.name}</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className="font-body-lg text-body-lg text-on-surface font-medium">{item.name}</p>
+          {item.log && renderLogStatusBadge(item.log.status)}
+        </div>
         <p className="font-body-sm text-body-sm text-on-surface-variant">
           {item.price ? `₹${Number(item.price).toFixed(2)} / ${item.unit}` : `Unit: ${item.unit}`}
         </p>

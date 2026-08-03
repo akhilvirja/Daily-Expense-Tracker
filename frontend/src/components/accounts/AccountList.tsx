@@ -51,19 +51,21 @@ export const AccountList: React.FC<AccountListProps> = ({
             key={account.id} 
             padding="none" 
             hoverable 
-            className={`p-5 transition-all ${!account.isActive ? "opacity-75 bg-surface-container-low/40" : ""}`}
+            className={`p-4 sm:p-5 transition-all ${!account.isActive ? "opacity-75 bg-surface-container-low/40" : ""}`}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-3">
+            <div className="flex justify-between items-start mb-4 gap-3">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  className={`w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center ${
                     isBank ? "bg-secondary-container text-on-secondary-container" : "bg-primary-container text-on-primary-container"
                   }`}
                 >
                   {isBank ? <Landmark size={20} /> : <Banknote size={20} />}
                 </div>
-                <div>
-                  <h3 className="font-title-md text-title-md text-on-surface">{account.name}</h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-title-md text-title-md text-on-surface truncate" title={account.name}>
+                    {account.name}
+                  </h3>
                   <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">
                     {isBank ? "Bank" : "Cash"}
                   </span>
@@ -71,7 +73,7 @@ export const AccountList: React.FC<AccountListProps> = ({
               </div>
               
               {/* Account ON / OFF Toggle Switch */}
-              <div className="flex items-center gap-2.5 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/40">
+              <div className="flex items-center gap-2.5 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/40 flex-shrink-0">
                 <span className={`text-xs font-bold uppercase tracking-wider ${account.isActive ? "text-primary" : "text-on-surface-variant"}`}>
                   {account.isActive ? "ON" : "OFF"}
                 </span>
@@ -94,19 +96,19 @@ export const AccountList: React.FC<AccountListProps> = ({
               </div>
             </div>
 
-            <div className="flex justify-between items-end mt-6 pt-4 border-t border-outline-variant">
-              <div>
+            <div className="flex justify-between items-end mt-6 pt-4 border-t border-outline-variant gap-2">
+              <div className="min-w-0">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">Opening Balance</p>
-                <p className="font-tabular-nums text-tabular-nums text-on-surface">
+                <p className="font-tabular-nums text-tabular-nums text-on-surface truncate">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
                   }).format(account.openingBalance)}
                 </p>
               </div>
-              <div className="text-right">
+              <div className="text-right min-w-0 flex-shrink-0">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">Running Balance</p>
-                <p className="font-tabular-nums text-tabular-nums text-primary font-bold text-lg">
+                <p className="font-tabular-nums text-tabular-nums text-primary font-bold text-lg truncate">
                   {new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",
@@ -118,14 +120,14 @@ export const AccountList: React.FC<AccountListProps> = ({
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => onEdit(account)}
-                className="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"
                 title="Edit Account"
               >
                 <Edit2 size={16} /> Edit
               </button>
               <button
                 onClick={() => onDelete(account)}
-                className="px-3 py-1.5 text-error hover:bg-error-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 text-error hover:bg-error-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"
                 title="Delete Account"
               >
                 <Trash2 size={16} /> Delete

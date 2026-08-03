@@ -1,16 +1,18 @@
 import prisma from '../config/db.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
-import { sendSuccess, sendError } from '../utils/response.js';
+import { sendSuccess, sendError, sendPaginatedSuccess } from '../utils/response.js';
+import { getPaginationParams, getPaginationMeta } from '../utils/pagination.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
 import { STATUS_MESSAGES } from '../constants/statusMessages.js';
 
 /**
- * @desc    Get all transactions for the authenticated user
+ * @desc    Get all transactions for the authenticated user (with pagination & filters)
  * @route   GET /api/v1/transactions
  * @access  Private
  */
 export const getTransactions = asyncHandler(async (req, res) => {
-  const { accountId, categoryId, type, startDate, endDate } = req.query;
+  const { accountId, categoryId, type, startDate, endDate, search } = req.query;
+  const { page, limit, skip } = getPaginationParams(req.query, { page: 1, limit: 10 });
 
   // Build filter object
   const filter = { userId: req.user.id };
@@ -25,25 +27,40 @@ export const getTransactions = asyncHandler(async (req, res) => {
     if (endDate) filter.occurredOn.lte = new Date(endDate);
   }
 
-  const transactions = await prisma.transaction.findMany({
-    where: filter,
-    orderBy: {
-      occurredOn: 'desc',
-    },
-    include: {
-      account: { select: { id: true, name: true, kind: true } },
-      category: { select: { id: true, name: true, isSystem: true } },
-      bill: { 
-        select: { 
-          id: true, 
-          periodStart: true,
-          item: { select: { id: true, name: true } } 
-        } 
-      }
-    }
-  });
+  if (search && search.trim() !== '') {
+    filter.description = {
+      contains: search.trim(),
+      mode: 'insensitive',
+    };
+  }
 
-  return sendSuccess(res, STATUS_CODES.OK, transactions, STATUS_MESSAGES.SUCCESS.FETCHED);
+  // Count total matching transactions & fetch paginated results in parallel
+  const [total, transactions] = await Promise.all([
+    prisma.transaction.count({ where: filter }),
+    prisma.transaction.findMany({
+      where: filter,
+      skip,
+      take: limit,
+      orderBy: {
+        occurredOn: 'desc',
+      },
+      include: {
+        account: { select: { id: true, name: true, kind: true } },
+        category: { select: { id: true, name: true, isSystem: true } },
+        bill: { 
+          select: { 
+            id: true, 
+            periodStart: true,
+            item: { select: { id: true, name: true } } 
+          } 
+        }
+      }
+    }),
+  ]);
+
+  const pagination = getPaginationMeta(total, page, limit);
+
+  return sendPaginatedSuccess(res, STATUS_CODES.OK, transactions, pagination, STATUS_MESSAGES.SUCCESS.FETCHED);
 });
 
 /**

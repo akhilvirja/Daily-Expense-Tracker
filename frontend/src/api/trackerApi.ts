@@ -10,11 +10,18 @@ export interface TrackerItem {
 
 export interface TrackerLog {
   id: string;
+  userId?: string;
+  itemId?: string;
   logDate: string;
-  quantity: number;
-  amount: number;
+  quantity: number | string;
+  amount: number | string;
   note: string | null;
+  isBilled?: boolean;
+  billId?: string | null;
+  bill?: any;
   status?: 'unbilled' | 'billed_unpaid' | 'billed_paid';
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface TrackerItemWithLog {

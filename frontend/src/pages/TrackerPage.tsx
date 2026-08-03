@@ -8,6 +8,30 @@ import { Plus, Calendar, Receipt, Save, History, Edit2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Toast from '../components/ui/Toast';
 
+const renderLogStatusBadge = (status?: string) => {
+  switch (status) {
+    case 'billed_paid':
+      return (
+        <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-label-caps text-label-caps bg-secondary-container text-on-secondary-container font-semibold uppercase tracking-wider whitespace-nowrap">
+          Paid
+        </span>
+      );
+    case 'billed_unpaid':
+      return (
+        <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-label-caps text-label-caps bg-error-container text-on-error-container font-semibold uppercase tracking-wider whitespace-nowrap">
+          Billed (Unpaid)
+        </span>
+      );
+    case 'unbilled':
+    default:
+      return (
+        <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-label-caps text-label-caps bg-surface-container-high text-on-surface-variant font-medium uppercase tracking-wider whitespace-nowrap">
+          Unbilled
+        </span>
+      );
+  }
+};
+
 const TrackerPage: React.FC = () => {
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [items, setItems] = useState<TrackerItem[]>([]);
@@ -278,17 +302,25 @@ const TrackerPage: React.FC = () => {
             <div className="max-w-4xl mx-auto space-y-6 w-full">
               {/* Logging Form Card */}
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 lg:p-6 shadow-sm w-full">
-                <div className="flex justify-between items-center mb-5 border-b border-surface-container-highest pb-4">
-                  <div>
-                    <span className="text-xs font-bold tracking-wider text-primary uppercase mb-1 block">Logging For</span>
-                    <h3 className="text-2xl font-bold text-on-surface leading-tight">{selectedItem.name}</h3>
-                  </div>
-                  <div className="text-right">
-                     <span className="text-sm text-on-surface-variant font-medium bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/50">
-                      {selectedItem.price ? `₹${Number(selectedItem.price).toFixed(2)} / ${selectedItem.unit}` : `Unit: ${selectedItem.unit}`}
-                    </span>
-                  </div>
-                </div>
+                {(() => {
+                  const selectedDateLog = recentLogs.find(l => l.logDate.startsWith(date));
+                  return (
+                    <div className="flex justify-between items-center mb-5 border-b border-surface-container-highest pb-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-xs font-bold tracking-wider text-primary uppercase">Logging For</span>
+                          {selectedDateLog && renderLogStatusBadge(selectedDateLog.status)}
+                        </div>
+                        <h3 className="text-2xl font-bold text-on-surface leading-tight">{selectedItem.name}</h3>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm text-on-surface-variant font-medium bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/50">
+                          {selectedItem.price ? `₹${Number(selectedItem.price).toFixed(2)} / ${selectedItem.unit}` : `Unit: ${selectedItem.unit}`}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <div className="flex flex-col sm:flex-row items-end gap-4 lg:gap-6 w-full">
                   {/* Quantity Stepper */}
@@ -350,11 +382,19 @@ const TrackerPage: React.FC = () => {
 
               {/* Recent Logs List */}
               <div>
-                <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h4 className="text-sm font-bold text-on-surface-variant uppercase tracking-wider mb-3 flex items-center gap-2">
                   <History size={16} />
                   Recent Logs
                 </h4>
                 <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+                  {/* Table Header for Desktop/Tablet */}
+                  <div className="hidden sm:grid sm:grid-cols-12 gap-4 px-5 py-3 bg-surface-container-low border-b border-outline-variant font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider font-semibold">
+                    <div className="col-span-4">Date</div>
+                    <div className="col-span-3 text-right">Quantity</div>
+                    <div className="col-span-2 text-right">Amount</div>
+                    <div className="col-span-3 text-right">Status</div>
+                  </div>
+
                   {isLoadingLogs ? (
                     <div className="p-8 text-center text-on-surface-variant flex flex-col items-center gap-3">
                       <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -368,20 +408,71 @@ const TrackerPage: React.FC = () => {
                           weekday: 'short', month: 'short', day: 'numeric' 
                         });
                         return (
-                          <div key={log.id} className={`p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 transition-colors hover:bg-surface-container-lowest/50 ${isToday ? 'bg-primary/5' : ''}`}>
-                            <div className="flex items-center gap-3">
-                              <div className={`w-2 h-2 rounded-full ${isToday ? 'bg-primary' : 'bg-outline-variant'}`} />
-                              <span className={`text-sm font-medium ${isToday ? 'text-primary' : 'text-on-surface'}`}>
-                                {isToday ? 'Selected Date (' + logDateStr + ')' : logDateStr}
-                              </span>
+                          <div 
+                            key={log.id} 
+                            className={`px-4 sm:px-5 py-3.5 transition-colors hover:bg-surface-container-low/60 ${
+                              isToday ? 'bg-primary/5' : ''
+                            }`}
+                          >
+                            {/* Desktop & Tablet Grid View */}
+                            <div className="hidden sm:grid sm:grid-cols-12 sm:items-center gap-4">
+                              {/* Col 1: Date */}
+                              <div className="col-span-4 flex items-center gap-3 min-w-0">
+                                <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${isToday ? 'bg-primary ring-4 ring-primary/20' : 'bg-outline-variant'}`} />
+                                <div className="truncate flex items-center gap-2">
+                                  <span className={`text-sm font-medium ${isToday ? 'text-primary font-semibold' : 'text-on-surface'}`}>
+                                    {logDateStr}
+                                  </span>
+                                  {isToday && (
+                                    <span className="text-[11px] font-semibold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                                      Selected
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Col 2: Quantity */}
+                              <div className="col-span-3 text-right">
+                                <span className="text-sm font-medium text-on-surface-variant font-tabular-nums">
+                                  {Number(log.quantity)} <span className="text-xs uppercase text-on-surface-variant/80">{selectedItem.unit}{Number(log.quantity) !== 1 && !selectedItem.unit.endsWith('s') ? 's' : ''}</span>
+                                </span>
+                              </div>
+
+                              {/* Col 3: Amount */}
+                              <div className="col-span-2 text-right">
+                                <span className="text-base font-bold text-on-surface font-tabular-nums">
+                                  ₹{Number(log.amount).toFixed(2)}
+                                </span>
+                              </div>
+
+                              {/* Col 4: Status */}
+                              <div className="col-span-3 flex justify-end items-center">
+                                {renderLogStatusBadge(log.status)}
+                              </div>
                             </div>
-                            <div className="flex items-center justify-between sm:justify-end gap-6 pl-5 sm:pl-0">
-                              <span className="text-sm font-medium text-on-surface-variant">
-                                {log.quantity} <span className="text-xs uppercase">{selectedItem.unit}{log.quantity !== 1 && !selectedItem.unit.endsWith('s') ? 's' : ''}</span>
-                              </span>
-                              <span className="text-base font-bold text-on-surface">
-                                ₹{Number(log.amount).toFixed(2)}
-                              </span>
+
+                            {/* Mobile View */}
+                            <div className="flex flex-col gap-2.5 sm:hidden">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isToday ? 'bg-primary ring-2 ring-primary/20' : 'bg-outline-variant'}`} />
+                                  <span className={`text-sm font-medium truncate ${isToday ? 'text-primary font-semibold' : 'text-on-surface'}`}>
+                                    {logDateStr} {isToday ? '(Selected)' : ''}
+                                  </span>
+                                </div>
+                                <div className="flex-shrink-0">
+                                  {renderLogStatusBadge(log.status)}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-sm">
+                                <span className="text-on-surface-variant font-medium">
+                                  {Number(log.quantity)} <span className="text-xs uppercase">{selectedItem.unit}{Number(log.quantity) !== 1 && !selectedItem.unit.endsWith('s') ? 's' : ''}</span>
+                                </span>
+                                <span className="text-base font-bold text-on-surface font-tabular-nums">
+                                  ₹{Number(log.amount).toFixed(2)}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         );
