@@ -6,6 +6,7 @@ import accountRoutes from './account.routes.js';
 import categoryRoutes from './category.routes.js';
 import transactionRoutes from './transaction.routes.js';
 import trackerRoutes from './tracker.routes.js';
+import billRoutes from './bill.routes.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/accounts', accountRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/transactions', transactionRoutes);
 router.use('/trackers', trackerRoutes);
+router.use('/bills', billRoutes);
 
 export default router;

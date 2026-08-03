@@ -169,16 +169,20 @@ model TrackerLog {
   quantity  Decimal   @db.Decimal(14, 3)
   amount    Decimal   @db.Decimal(14, 2)
   note      String?   @db.Text
+  isBilled  Boolean   @default(false)
+  billId    String?   @db.Uuid
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime? @updatedAt @db.Timestamptz()
 
   // Relations
   user User        @relation(fields: [userId], references: [id])
   item TrackerItem @relation(fields: [itemId], references: [id])
+  bill Bill?       @relation(fields: [billId], references: [id])
 
   @@unique([itemId, logDate])
   @@index([userId])
   @@index([itemId])
+  @@index([billId])
   @@map("tracker_logs")
 }
 
@@ -205,6 +209,7 @@ model Bill {
   item         TrackerItem   @relation(fields: [itemId], references: [id])
   paidAccount  Account?      @relation(fields: [paidAccountId], references: [id])
   transactions Transaction[]
+  trackerLogs  TrackerLog[]
 
   @@unique([itemId, periodStart])
   @@index([userId])

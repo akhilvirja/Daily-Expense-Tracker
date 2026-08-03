@@ -48,7 +48,7 @@ const TrackerItemModal: React.FC<TrackerItemModalProps> = ({ isOpen, onClose, on
       });
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save item');
+      setError(err.message || 'Failed to save item');
     } finally {
       setIsSubmitting(false);
     }
