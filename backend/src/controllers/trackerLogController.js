@@ -31,6 +31,9 @@ export const getLogsByDate = asyncHandler(async (req, res) => {
         where: {
           logDate: targetDate,
         },
+        include: {
+          bill: true,
+        },
       },
     },
     orderBy: {
@@ -41,6 +44,13 @@ export const getLogsByDate = asyncHandler(async (req, res) => {
   // Map the results to make it easier for the frontend
   const formattedData = itemsWithLogs.map(item => {
     const log = item.logs.length > 0 ? item.logs[0] : null;
+    let status = 'unbilled';
+    
+    if (log && log.billId && log.bill) {
+      if (log.bill.status === 'pending') status = 'billed_unpaid';
+      if (log.bill.status === 'paid') status = 'billed_paid';
+    }
+
     return {
       itemId: item.id,
       name: item.name,
@@ -51,6 +61,7 @@ export const getLogsByDate = asyncHandler(async (req, res) => {
         quantity: log.quantity,
         amount: log.amount,
         note: log.note,
+        status: status,
       } : null,
     };
   });
@@ -128,7 +139,7 @@ export const getRecentLogsByItem = asyncHandler(async (req, res) => {
   }
 
   // Fetch the last 10 logs for this item
-  const recentLogs = await prisma.trackerLog.findMany({
+  const recentLogsRaw = await prisma.trackerLog.findMany({
     where: {
       itemId,
     },
@@ -136,6 +147,23 @@ export const getRecentLogsByItem = asyncHandler(async (req, res) => {
       logDate: 'desc',
     },
     take: 10,
+    include: {
+      bill: true,
+    }
+  });
+
+  const recentLogs = recentLogsRaw.map(log => {
+    let status = 'unbilled';
+    
+    if (log.isBilled && log.bill) {
+      if (log.bill.status === 'pending') status = 'billed_unpaid';
+      if (log.bill.status === 'paid') status = 'billed_paid';
+    }
+
+    return {
+      ...log,
+      status,
+    };
   });
 
   return sendSuccess(res, STATUS_CODES.OK, recentLogs, 'Recent logs fetched successfully');

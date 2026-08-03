@@ -14,7 +14,7 @@ const DailyLogRow: React.FC<DailyLogRowProps> = ({ item, logDate, onUpdate }) =>
   const [quantity, setQuantity] = useState<number>(initialQuantity);
   const [amount, setAmount] = useState<number>(initialAmount);
   const [isUpdating, setIsUpdating] = useState(false);
-
+  
   // Sync state if props change (e.g. date changes)
   useEffect(() => {
     setQuantity(item.log ? item.log.quantity : 0);

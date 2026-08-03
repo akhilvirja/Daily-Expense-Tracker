@@ -88,6 +88,7 @@ model Category {
   id        String    @id @default(uuid()) @db.Uuid
   userId    String    @db.Uuid
   name      String    @db.VarChar(100)
+  isSystem  Boolean   @default(false)
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime? @updatedAt @db.Timestamptz()
   deletedAt DateTime? @db.Timestamptz()
@@ -211,7 +212,6 @@ model Bill {
   transactions Transaction[]
   trackerLogs  TrackerLog[]
 
-  @@unique([itemId, periodStart])
   @@index([userId])
   @@index([itemId])
   @@index([paidAccountId])

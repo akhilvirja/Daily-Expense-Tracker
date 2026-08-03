@@ -60,6 +60,19 @@ export const generateBill = asyncHandler(async (req, res) => {
   });
 
   if (logs.length === 0) {
+    // Check if a bill already exists exactly for this period
+    const existingBill = await prisma.bill.findFirst({
+      where: {
+        itemId,
+        periodStart: start,
+        periodEnd: end,
+      }
+    });
+
+    if (existingBill) {
+      return sendError(res, STATUS_CODES.CONFLICT, 'A bill is already generated for this item in this period');
+    }
+
     return sendError(res, STATUS_CODES.BAD_REQUEST, 'No unbilled logs found for this item in the specified period');
   }
 
@@ -141,11 +154,31 @@ export const payBill = asyncHandler(async (req, res) => {
 
   // We need a transaction to ensure both bill status and ledger are updated safely
   const result = await prisma.$transaction(async (tx) => {
+    // Ensure Category exists for this bill
+    const categoryName = `Bill: ${bill.item.name}`;
+    let category = await tx.category.findFirst({
+      where: {
+        userId: req.user.id,
+        name: categoryName
+      }
+    });
+
+    if (!category) {
+      category = await tx.category.create({
+        data: {
+          userId: req.user.id,
+          name: categoryName,
+          isSystem: true
+        }
+      });
+    }
+
     // 1. Create Transaction in ledger
     const transaction = await tx.transaction.create({
       data: {
         userId: req.user.id,
         accountId: account.id,
+        categoryId: category.id,
         type: 'debit',
         amount: bill.totalAmount,
         description: `Bill Payment: ${bill.item.name} (${bill.periodStart.toISOString().split('T')[0]}) ${remarks ? '- ' + remarks : ''}`,

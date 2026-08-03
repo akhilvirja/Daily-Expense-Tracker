@@ -95,9 +95,9 @@ export const TransactionList: React.FC<TransactionListProps> = ({ transactions, 
                     }`}
                   >
                     {isDebit ? "-" : "+"}
-                    {new Intl.NumberFormat("en-US", {
+                    {new Intl.NumberFormat("en-IN", {
                       style: "currency",
-                      currency: "USD",
+                      currency: "INR",
                     }).format(txn.amount)}
                   </td>
                 </tr>

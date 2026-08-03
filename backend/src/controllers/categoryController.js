@@ -14,6 +14,7 @@ export const getCategories = asyncHandler(async (req, res) => {
     where: {
       userId: req.user.id,
       deletedAt: null, // Don't fetch soft-deleted categories
+      isSystem: false, // Hide system-generated categories
     },
     orderBy: {
       name: 'asc',

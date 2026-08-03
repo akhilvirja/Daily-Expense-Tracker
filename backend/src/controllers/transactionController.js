@@ -32,7 +32,14 @@ export const getTransactions = asyncHandler(async (req, res) => {
     },
     include: {
       account: { select: { id: true, name: true, kind: true } },
-      category: { select: { id: true, name: true } },
+      category: { select: { id: true, name: true, isSystem: true } },
+      bill: { 
+        select: { 
+          id: true, 
+          periodStart: true,
+          item: { select: { id: true, name: true } } 
+        } 
+      }
     }
   });
 

@@ -14,6 +14,7 @@ export interface TrackerLog {
   quantity: number;
   amount: number;
   note: string | null;
+  status?: 'unbilled' | 'billed_unpaid' | 'billed_paid';
 }
 
 export interface TrackerItemWithLog {
