@@ -121,7 +121,7 @@ export const AccountsPage: React.FC = () => {
 
       const response = await accountApi.update(account.id, { isActive: updatedIsActive })
       if (response.success) {
-        showToast(`Account ${updatedIsActive ? "activated" : "archived"} successfully`, "success")
+        showToast(`Account turned ${updatedIsActive ? "ON" : "OFF"} successfully`, "success")
       } else {
         fetchAccounts()
         showToast("Failed to update account status", "error")
@@ -162,7 +162,7 @@ export const AccountsPage: React.FC = () => {
                 className="w-4 h-4 rounded text-primary focus:ring-primary border-outline"
               />
               <span className="font-body-sm text-body-sm text-on-surface-variant">
-                Show Archived
+                Show Inactive Accounts
               </span>
             </label>
           </div>

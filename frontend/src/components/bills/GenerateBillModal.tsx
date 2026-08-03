@@ -8,10 +8,11 @@ interface GenerateBillModalProps {
   onClose: () => void;
   onGenerate: (itemId: string, periodStart: string, periodEnd: string) => Promise<void>;
   items: TrackerItem[];
+  defaultItemId?: string;
 }
 
-const GenerateBillModal: React.FC<GenerateBillModalProps> = ({ isOpen, onClose, onGenerate, items }) => {
-  const [itemId, setItemId] = useState('');
+const GenerateBillModal: React.FC<GenerateBillModalProps> = ({ isOpen, onClose, onGenerate, items, defaultItemId }) => {
+  const [itemId, setItemId] = useState(defaultItemId || '');
   
   // Default to current month
   const today = new Date();
@@ -27,12 +28,12 @@ const GenerateBillModal: React.FC<GenerateBillModalProps> = ({ isOpen, onClose, 
   // Reset form when modal opens
   React.useEffect(() => {
     if (isOpen) {
-      setItemId('');
+      setItemId(defaultItemId || '');
       setPeriodStart(firstDay);
       setPeriodEnd(lastDay);
       setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, defaultItemId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

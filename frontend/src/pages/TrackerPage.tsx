@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { trackerApi } from '../api/trackerApi';
 import type { TrackerItem, TrackerLog } from '../api/trackerApi';
+import { billApi } from '../api/billApi';
 import TrackerItemModal from '../components/trackers/TrackerItemModal';
+import GenerateBillModal from '../components/bills/GenerateBillModal';
 import { Plus, Calendar, Receipt, Save, History, Edit2 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import Toast from '../components/ui/Toast';
 
 const TrackerPage: React.FC = () => {
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
@@ -11,6 +14,18 @@ const TrackerPage: React.FC = () => {
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGenerateBillModalOpen, setIsGenerateBillModalOpen] = useState(false);
+  
+  // Toast State
+  const [toast, setToast] = useState<{
+    isVisible: boolean;
+    message: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+  }>({
+    isVisible: false,
+    message: '',
+    type: 'info'
+  });
   
   // Selection State
   const [selectedItem, setSelectedItem] = useState<TrackerItem | null>(null);
@@ -95,6 +110,38 @@ const TrackerPage: React.FC = () => {
       console.error('Failed to save log', error);
     } finally {
       setIsSavingLog(false);
+    }
+  };
+
+  const handleOpenGenerateBillModal = () => {
+    if (!selectedItem) {
+      setToast({
+        isVisible: true,
+        message: 'Please select an item first to generate a bill.',
+        type: 'warning'
+      });
+      return;
+    }
+    setIsGenerateBillModalOpen(true);
+  };
+
+  const handleGenerateBill = async (itemId: string, periodStart: string, periodEnd: string) => {
+    try {
+      await billApi.generateBill({ itemId, periodStart, periodEnd });
+      setToast({
+        isVisible: true,
+        message: 'Bill generated successfully!',
+        type: 'success'
+      });
+      if (selectedItem) {
+        await loadRecentLogs(selectedItem.id);
+      }
+    } catch (error: any) {
+      setToast({
+        isVisible: true,
+        message: error.message || 'Failed to generate bill',
+        type: 'error'
+      });
     }
   };
 
@@ -206,7 +253,11 @@ const TrackerPage: React.FC = () => {
               />
             </div>
 
-            <Button icon={<Receipt size={16} />} className="flex-1 sm:flex-none">
+            <Button 
+              onClick={handleOpenGenerateBillModal}
+              icon={<Receipt size={16} />} 
+              className="flex-1 sm:flex-none"
+            >
               <span className="hidden lg:inline">Generate Bill</span>
               <span className="lg:hidden">Bill</span>
             </Button>
@@ -354,6 +405,21 @@ const TrackerPage: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveItem}
         item={selectedItem}
+      />
+
+      <GenerateBillModal
+        isOpen={isGenerateBillModalOpen}
+        onClose={() => setIsGenerateBillModalOpen(false)}
+        onGenerate={handleGenerateBill}
+        items={items.filter(i => i.isActive)}
+        defaultItemId={selectedItem?.id}
+      />
+
+      <Toast 
+        isVisible={toast.isVisible}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
       />
     </div>
   );

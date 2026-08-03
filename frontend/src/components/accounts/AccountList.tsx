@@ -1,8 +1,7 @@
 import React from "react"
 import type { Account } from "../../types"
 import Card from "../ui/Card"
-import Badge from "../ui/Badge"
-import { Landmark, Banknote, Edit2, Archive, ArchiveRestore, Trash2 } from "lucide-react"
+import { Landmark, Banknote, Edit2, Trash2 } from "lucide-react"
 
 interface AccountListProps {
   accounts: Account[]
@@ -48,7 +47,12 @@ export const AccountList: React.FC<AccountListProps> = ({
       {accounts.map((account) => {
         const isBank = account.kind === "bank"
         return (
-          <Card key={account.id} padding="none" hoverable className="p-5">
+          <Card 
+            key={account.id} 
+            padding="none" 
+            hoverable 
+            className={`p-5 transition-all ${!account.isActive ? "opacity-75 bg-surface-container-low/40" : ""}`}
+          >
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center gap-3">
                 <div
@@ -65,9 +69,29 @@ export const AccountList: React.FC<AccountListProps> = ({
                   </span>
                 </div>
               </div>
-              <Badge variant={account.isActive ? "default" : "info"}>
-                {account.isActive ? "Active" : "Archived"}
-              </Badge>
+              
+              {/* Account ON / OFF Toggle Switch */}
+              <div className="flex items-center gap-2.5 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/40">
+                <span className={`text-xs font-bold uppercase tracking-wider ${account.isActive ? "text-primary" : "text-on-surface-variant"}`}>
+                  {account.isActive ? "ON" : "OFF"}
+                </span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={account.isActive}
+                  onClick={() => onToggleStatus(account)}
+                  className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 ${
+                    account.isActive ? "bg-primary" : "bg-outline"
+                  }`}
+                  title={account.isActive ? "Turn Off Account" : "Turn On Account"}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                      account.isActive ? "translate-x-4" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
 
             <div className="flex justify-between items-end mt-6 pt-4 border-t border-outline-variant">
@@ -98,14 +122,6 @@ export const AccountList: React.FC<AccountListProps> = ({
                 title="Edit Account"
               >
                 <Edit2 size={16} /> Edit
-              </button>
-              <button
-                onClick={() => onToggleStatus(account)}
-                className="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors"
-                title={account.isActive ? "Archive Account" : "Activate Account"}
-              >
-                {account.isActive ? <Archive size={16} /> : <ArchiveRestore size={16} />}
-                {account.isActive ? "Archive" : "Activate"}
               </button>
               <button
                 onClick={() => onDelete(account)}
