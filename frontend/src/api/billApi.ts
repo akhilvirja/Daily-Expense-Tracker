@@ -1,3 +1,4 @@
+import type { PaginatedResponse, PaginationMeta } from '../types';
 import axiosInstance from './axiosInstance';
 import type { TrackerItem } from './trackerApi';
 
@@ -17,9 +18,12 @@ export interface Bill {
 }
 
 export const billApi = {
-  getBills: async (): Promise<Bill[]> => {
-    const response = await axiosInstance.get('/bills');
-    return response.data.data;
+  getBills: async (params?: { page?: number; limit?: number; status?: string }): Promise<{ data: Bill[]; pagination: PaginationMeta }> => {
+    const response = await axiosInstance.get<PaginatedResponse<Bill>>('/bills', { params });
+    return {
+      data: response.data.data || [],
+      pagination: response.data.pagination,
+    };
   },
   
   generateBill: async (data: { itemId: string; periodStart: string; periodEnd: string }): Promise<Bill> => {

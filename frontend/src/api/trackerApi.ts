@@ -1,3 +1,4 @@
+import type { PaginatedResponse, PaginationMeta } from '../types';
 import axiosInstance from './axiosInstance';
 
 export interface TrackerItem {
@@ -70,8 +71,13 @@ export const trackerApi = {
     return response.data.data;
   },
 
-  getRecentLogs: async (itemId: string): Promise<TrackerLog[]> => {
-    const response = await axiosInstance.get(`/trackers/logs/item/${itemId}`);
-    return response.data.data;
+  getRecentLogs: async (itemId: string, page = 1, limit = 10): Promise<{ data: TrackerLog[]; pagination: PaginationMeta }> => {
+    const response = await axiosInstance.get<PaginatedResponse<TrackerLog>>(`/trackers/logs/item/${itemId}`, {
+      params: { page, limit }
+    });
+    return {
+      data: response.data.data || [],
+      pagination: response.data.pagination
+    };
   }
 };

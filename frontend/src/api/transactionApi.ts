@@ -1,9 +1,9 @@
-import type { ApiResponse, Transaction, CreateTransactionPayload, UpdateTransactionPayload } from '../types';
+import type { ApiResponse, PaginatedResponse, Transaction, CreateTransactionPayload, UpdateTransactionPayload } from '../types';
 import axiosInstance from './axiosInstance';
 
 export const transactionApi = {
-    getAll: async (params?: Record<string, any>): Promise<ApiResponse<Transaction[]>> => {
-        const { data } = await axiosInstance.get<ApiResponse<Transaction[]>>('/transactions', { params });
+    getAll: async (params?: Record<string, any>): Promise<PaginatedResponse<Transaction>> => {
+        const { data } = await axiosInstance.get<PaginatedResponse<Transaction>>('/transactions', { params });
         return data;
     },
 

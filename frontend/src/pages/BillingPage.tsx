@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { billApi } from '../api/billApi';
 import type { Bill } from '../api/billApi';
@@ -6,16 +6,28 @@ import { accountApi } from '../api/accountApi';
 import type { Account } from '../api/accountApi';
 import { trackerApi } from '../api/trackerApi';
 import type { TrackerItem } from '../api/trackerApi';
+import type { PaginationMeta } from '../types';
 import PayBillModal from '../components/bills/PayBillModal';
 import GenerateBillModal from '../components/bills/GenerateBillModal';
+import Pagination from '../components/ui/Pagination';
 
 const BillingPage: React.FC = () => {
   const [bills, setBills] = useState<Bill[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [items, setItems] = useState<TrackerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filtering
+  // Pagination & Filtering
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [statusFilter, setStatusFilter] = useState<string>('All');
   
   // Modals
@@ -23,37 +35,55 @@ const BillingPage: React.FC = () => {
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
 
-  const fetchData = async () => {
+  const fetchBills = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [billsData, accountsRes, itemsData] = await Promise.all([
-        billApi.getBills(),
+      const res = await billApi.getBills({
+        page,
+        limit: pageSize,
+        status: statusFilter !== 'All' ? statusFilter : undefined,
+      });
+      setBills(res.data);
+      if (res.pagination) {
+        setPagination(res.pagination);
+      }
+    } catch (error) {
+      console.error('Failed to fetch bills', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, pageSize, statusFilter]);
+
+  const fetchAuxData = async () => {
+    try {
+      const [accountsRes, itemsData] = await Promise.all([
         accountApi.getAll(),
         trackerApi.getItems()
       ]);
-      setBills(billsData);
       setAccounts((accountsRes.data || []).filter((a: Account) => a.isActive));
       setItems(itemsData.filter((i: TrackerItem) => i.isActive));
     } catch (error) {
-      console.error('Failed to fetch billing data', error);
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to fetch accounts/items', error);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchAuxData();
   }, []);
+
+  useEffect(() => {
+    fetchBills();
+  }, [fetchBills]);
 
   const handleGenerateBill = async (itemId: string, periodStart: string, periodEnd: string) => {
     await billApi.generateBill({ itemId, periodStart, periodEnd });
-    fetchData();
+    fetchBills();
   };
 
   const handlePayBill = async (accountId: string, paidOn: string, remarks?: string) => {
     if (selectedBill) {
       await billApi.payBill(selectedBill.id, { accountId, paidOn, remarks });
-      fetchData();
+      fetchBills();
     }
   };
 
@@ -61,17 +91,26 @@ const BillingPage: React.FC = () => {
     if (window.confirm('Are you sure you want to undo this payment? It will remove the associated transaction.')) {
       try {
         await billApi.undoPayment(billId);
-        fetchData();
+        fetchBills();
       } catch (error) {
         console.error('Failed to undo payment', error);
       }
     }
   };
 
-  const filteredBills = bills.filter(bill => {
-    if (statusFilter === 'All') return true;
-    return bill.status === statusFilter.toLowerCase();
-  });
+  const handleStatusFilterChange = (newStatus: string) => {
+    setStatusFilter(newStatus);
+    setPage(1);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setPage(1);
+  };
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
@@ -96,7 +135,7 @@ const BillingPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <select 
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => handleStatusFilterChange(e.target.value)}
               className="bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
             >
               <option value="All">Status: All</option>
@@ -115,8 +154,8 @@ const BillingPage: React.FC = () => {
         </div>
 
         {/* Bills Table Card */}
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex-1">
-          <div className="overflow-x-auto">
+        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col">
+          <div className="overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-surface-container-low border-b border-outline-variant">
@@ -136,8 +175,8 @@ const BillingPage: React.FC = () => {
                       Loading bills...
                     </td>
                   </tr>
-                ) : filteredBills.length > 0 ? (
-                  filteredBills.map((bill) => (
+                ) : bills.length > 0 ? (
+                  bills.map((bill) => (
                     <tr key={bill.id} className="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
                       <td className="px-4 py-4 text-on-surface-variant font-medium whitespace-nowrap">
                         {formatDurationDate(bill.createdAt)}
@@ -200,6 +239,18 @@ const BillingPage: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Footer */}
+          {bills.length > 0 && (
+            <Pagination
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+              pageSizeOptions={[5, 10, 15, 30]}
+              isLoading={isLoading}
+              itemLabel="bills"
+            />
+          )}
         </div>
       </div>
 

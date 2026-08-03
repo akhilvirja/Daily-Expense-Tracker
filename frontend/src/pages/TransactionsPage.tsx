@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import { transactionApi } from "../api/transactionApi"
 import { accountApi } from "../api/accountApi"
 import { categoryApi } from "../api/categoryApi"
-import type { Transaction, Account, Category, CreateTransactionPayload } from "../types"
+import type { Transaction, Account, Category, CreateTransactionPayload, PaginationMeta } from "../types"
 import { TransactionList } from "../components/transactions/TransactionList"
 import { TransactionForm } from "../components/transactions/TransactionForm"
 import Modal from "../components/ui/Modal"
@@ -13,6 +13,14 @@ import { Plus, Search } from "lucide-react"
 
 export const TransactionsPage: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [pagination, setPagination] = useState<PaginationMeta>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  })
   const [accounts, setAccounts] = useState<Account[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   
@@ -20,7 +28,9 @@ export const TransactionsPage: React.FC = () => {
   const [isActionLoading, setIsActionLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Filters
+  // Filters & Pagination State
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
   const [filterAccount, setFilterAccount] = useState("")
   const [filterCategory, setFilterCategory] = useState("")
   const [filterType, setFilterType] = useState("")
@@ -36,28 +46,54 @@ export const TransactionsPage: React.FC = () => {
     setToast({ isVisible: true, message, type })
   }
 
-  const fetchData = useCallback(async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setIsLoading(true)
-      const [txRes, accRes, catRes] = await Promise.all([
-        transactionApi.getAll(),
-        accountApi.getAll(),
-        categoryApi.getAll()
-      ])
+      const params: Record<string, any> = {
+        page,
+        limit: pageSize,
+      }
+      if (filterAccount) params.accountId = filterAccount
+      if (filterCategory) params.categoryId = filterCategory
+      if (filterType) params.type = filterType
+      if (searchQuery.trim()) params.search = searchQuery.trim()
 
-      if (txRes.success) setTransactions(txRes.data)
-      if (accRes.success) setAccounts(accRes.data)
-      if (catRes.success) setCategories(catRes.data)
+      const txRes = await transactionApi.getAll(params)
+
+      if (txRes.success) {
+        setTransactions(txRes.data)
+        if (txRes.pagination) {
+          setPagination(txRes.pagination)
+        }
+      }
     } catch (error: any) {
-      showToast(error.message || "Failed to load data", "error")
+      showToast(error.message || "Failed to load transactions", "error")
     } finally {
       setIsLoading(false)
     }
+  }, [page, pageSize, filterAccount, filterCategory, filterType, searchQuery])
+
+  // Initial load for static metadata (accounts and categories)
+  useEffect(() => {
+    const fetchMetadata = async () => {
+      try {
+        const [accRes, catRes] = await Promise.all([
+          accountApi.getAll(),
+          categoryApi.getAll()
+        ])
+        if (accRes.success) setAccounts(accRes.data)
+        if (catRes.success) setCategories(catRes.data)
+      } catch (error: any) {
+        showToast(error.message || "Failed to load filter data", "error")
+      }
+    }
+    fetchMetadata()
   }, [])
 
+  // Fetch transactions on dependency change
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    fetchTransactions()
+  }, [fetchTransactions])
 
   const handleOpenModal = () => {
     setIsModalOpen(true)
@@ -73,7 +109,7 @@ export const TransactionsPage: React.FC = () => {
       const response = await transactionApi.create(payload)
       if (response.success) {
         showToast("Transaction saved successfully", "success")
-        fetchData()
+        fetchTransactions()
         handleCloseModal()
       }
     } catch (error: any) {
@@ -83,22 +119,39 @@ export const TransactionsPage: React.FC = () => {
     }
   }
 
-  // Filter logic (Client-side for now based on the design)
-  const displayedTransactions = transactions.filter(txn => {
-    if (filterAccount && txn.accountId !== filterAccount) return false
-    if (filterCategory && txn.categoryId !== filterCategory) return false
-    if (filterType && txn.type !== filterType) return false
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      if (!txn.description?.toLowerCase().includes(query)) return false
-    }
-    return true
-  })
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
+  }
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize)
+    setPage(1) // Reset to first page when changing page size
+  }
+
+  const handleFilterAccountChange = (val: string) => {
+    setFilterAccount(val)
+    setPage(1)
+  }
+
+  const handleFilterCategoryChange = (val: string) => {
+    setFilterCategory(val)
+    setPage(1)
+  }
+
+  const handleFilterTypeChange = (val: string) => {
+    setFilterType(val)
+    setPage(1)
+  }
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val)
+    setPage(1)
+  }
 
   return (
-    <div className="flex-1 w-full max-w-container-max mx-auto flex flex-col min-h-full">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto h-full">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
           <h2 className="font-display-lg text-display-lg text-on-background">Transactions</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant mt-1">
@@ -111,13 +164,13 @@ export const TransactionsPage: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 mb-6 shadow-sm flex flex-wrap items-center gap-4">
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm flex flex-wrap items-center gap-4">
         {/* Account Filter */}
         <div className="flex-1 min-w-[150px]">
           <Select
             label="Account"
             value={filterAccount}
-            onChange={(e) => setFilterAccount(e.target.value)}
+            onChange={(e) => handleFilterAccountChange(e.target.value)}
             placeholder=""
             options={[
               { value: "", label: "All Accounts" },
@@ -131,7 +184,7 @@ export const TransactionsPage: React.FC = () => {
           <Select
             label="Category"
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            onChange={(e) => handleFilterCategoryChange(e.target.value)}
             placeholder=""
             options={[
               { value: "", label: "All Categories" },
@@ -145,7 +198,7 @@ export const TransactionsPage: React.FC = () => {
           <Select
             label="Type"
             value={filterType}
-            onChange={(e) => setFilterType(e.target.value)}
+            onChange={(e) => handleFilterTypeChange(e.target.value)}
             placeholder=""
             options={[
               { value: "", label: "All Types" },
@@ -165,7 +218,7 @@ export const TransactionsPage: React.FC = () => {
             <input 
               type="text" 
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => handleSearchChange(e.target.value)}
               className="w-full bg-surface border border-outline-variant rounded-lg pl-9 pr-3 py-2 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-sm text-body-sm h-[40px] placeholder-on-surface-variant/50" 
               placeholder="Search description..." 
             />
@@ -175,8 +228,11 @@ export const TransactionsPage: React.FC = () => {
 
       {/* Main Table Area */}
       <TransactionList 
-        transactions={displayedTransactions} 
+        transactions={transactions} 
         isLoading={isLoading} 
+        pagination={pagination}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
       />
 
       {/* Add Transaction Modal */}

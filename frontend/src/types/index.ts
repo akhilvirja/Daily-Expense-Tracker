@@ -9,6 +9,23 @@ export interface ApiResponse<T = unknown> {
     errors?: ValidationError[];
 }
 
+export interface PaginationMeta {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasPrevPage: boolean;
+    hasNextPage: boolean;
+}
+
+export interface PaginatedResponse<T = unknown> {
+    success: boolean;
+    message: string;
+    data: T[];
+    pagination: PaginationMeta;
+    errors?: ValidationError[];
+}
+
 export interface ValidationError {
     field: string;
     message: string;

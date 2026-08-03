@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { trackerApi } from '../api/trackerApi';
 import type { TrackerItem, TrackerLog } from '../api/trackerApi';
+import type { PaginationMeta } from '../types';
 import { billApi } from '../api/billApi';
 import TrackerItemModal from '../components/trackers/TrackerItemModal';
 import GenerateBillModal from '../components/bills/GenerateBillModal';
 import { Plus, Calendar, Receipt, Save, History, Edit2 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Toast from '../components/ui/Toast';
+import Pagination from '../components/ui/Pagination';
 
 const renderLogStatusBadge = (status?: string) => {
   switch (status) {
@@ -54,8 +56,18 @@ const TrackerPage: React.FC = () => {
   // Selection State
   const [selectedItem, setSelectedItem] = useState<TrackerItem | null>(null);
   
-  // Single item log states
+  // Single item log states & Pagination
   const [recentLogs, setRecentLogs] = useState<TrackerLog[]>([]);
+  const [logsPage, setLogsPage] = useState(1);
+  const [logsPageSize, setLogsPageSize] = useState(10);
+  const [logsPagination, setLogsPagination] = useState<PaginationMeta>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+    hasPrevPage: false,
+    hasNextPage: false,
+  });
   const [currentQuantity, setCurrentQuantity] = useState<number>(0);
   const [currentAmount, setCurrentAmount] = useState<number>(0);
   const [isSavingLog, setIsSavingLog] = useState(false);
@@ -70,14 +82,17 @@ const TrackerPage: React.FC = () => {
     }
   };
 
-  const loadRecentLogs = async (itemId: string) => {
+  const loadRecentLogs = useCallback(async (itemId: string, pageNum = logsPage, limitNum = logsPageSize) => {
     try {
       setIsLoadingLogs(true);
-      const logs = await trackerApi.getRecentLogs(itemId);
-      setRecentLogs(logs);
+      const res = await trackerApi.getRecentLogs(itemId, pageNum, limitNum);
+      setRecentLogs(res.data);
+      if (res.pagination) {
+        setLogsPagination(res.pagination);
+      }
       
-      // Find log for current date
-      const todayLog = logs.find(l => l.logDate.startsWith(date));
+      // Find log for current date from loaded data
+      const todayLog = res.data.find(l => l.logDate.startsWith(date));
       if (todayLog) {
         setCurrentQuantity(Number(todayLog.quantity));
         setCurrentAmount(Number(todayLog.amount));
@@ -90,7 +105,7 @@ const TrackerPage: React.FC = () => {
     } finally {
       setIsLoadingLogs(false);
     }
-  };
+  }, [logsPage, logsPageSize, date]);
 
   useEffect(() => {
     fetchItems();
@@ -98,13 +113,13 @@ const TrackerPage: React.FC = () => {
 
   useEffect(() => {
     if (selectedItem) {
-      loadRecentLogs(selectedItem.id);
+      loadRecentLogs(selectedItem.id, logsPage, logsPageSize);
     } else {
       setRecentLogs([]);
       setCurrentQuantity(0);
       setCurrentAmount(0);
     }
-  }, [selectedItem, date]);
+  }, [selectedItem, date, logsPage, logsPageSize, loadRecentLogs]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
@@ -214,7 +229,10 @@ const TrackerPage: React.FC = () => {
                     ? 'bg-primary/5 border border-primary/30 shadow-sm' 
                     : 'bg-surface border border-outline-variant hover:border-outline hover:shadow-md'
                 }`}
-                onClick={() => setSelectedItem(item)}
+                onClick={() => {
+                  setSelectedItem(item);
+                  setLogsPage(1);
+                }}
               >
                 {/* Selection Indicator Bar */}
                 {isSelected && (
@@ -483,6 +501,21 @@ const TrackerPage: React.FC = () => {
                       <History size={24} className="text-outline" />
                       <p className="text-sm">No recent logs found for this item.</p>
                     </div>
+                  )}
+
+                  {/* Pagination for Recent Logs */}
+                  {recentLogs.length > 0 && (
+                    <Pagination
+                      pagination={logsPagination}
+                      onPageChange={(p) => setLogsPage(p)}
+                      onPageSizeChange={(size) => {
+                        setLogsPageSize(size);
+                        setLogsPage(1);
+                      }}
+                      pageSizeOptions={[5, 10, 15, 30]}
+                      isLoading={isLoadingLogs}
+                      itemLabel="logs"
+                    />
                   )}
                 </div>
               </div>
