@@ -25,7 +25,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: "h-12 px-6 text-title-md gap-2.5",
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
@@ -60,3 +60,5 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   }
 )
 Button.displayName = "Button"
+
+export default Button;

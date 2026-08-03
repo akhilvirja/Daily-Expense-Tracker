@@ -12,7 +12,7 @@ const paddingStyles = {
   lg: "p-8",
 }
 
-export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, hoverable = false, padding = "md", children, ...props }, ref) => {
     return (
       <div
@@ -28,3 +28,5 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   }
 )
 Card.displayName = "Card"
+
+export default Card;

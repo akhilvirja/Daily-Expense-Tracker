@@ -1,6 +1,6 @@
 import React from "react"
 import type { Category } from "../../types"
-import { Card } from "../ui/Card"
+import Card from "../ui/Card"
 import { Tags, Edit2, Trash2 } from "lucide-react"
 
 interface CategoryListProps {

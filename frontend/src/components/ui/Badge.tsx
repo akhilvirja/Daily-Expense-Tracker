@@ -15,7 +15,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   info: "bg-surface-variant text-on-surface-variant",
 }
 
-export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
+const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = "default", children, ...props }, ref) => {
     return (
       <span
@@ -31,3 +31,5 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   }
 )
 Badge.displayName = "Badge"
+
+export default Badge;

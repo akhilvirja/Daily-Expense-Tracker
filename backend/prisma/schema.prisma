@@ -142,6 +142,7 @@ model TrackerItem {
   userId    String    @db.Uuid
   name      String    @db.VarChar(150)
   unit      String    @db.VarChar(30)
+  price     Decimal   @db.Decimal(14, 2)
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now()) @db.Timestamptz()
   updatedAt DateTime? @updatedAt @db.Timestamptz()

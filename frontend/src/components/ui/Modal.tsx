@@ -16,7 +16,7 @@ const sizeWidths = {
   lg: "max-w-[720px]",
 }
 
-export const Modal: React.FC<ModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
@@ -83,3 +83,5 @@ export const Modal: React.FC<ModalProps> = ({
     </div>
   )
 }
+
+export default Modal;

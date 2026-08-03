@@ -18,7 +18,7 @@ const toastStyles: Record<ToastType, { bg: string; icon: React.ElementType }> = 
   info: { bg: "bg-inverse-surface text-inverse-on-surface", icon: Info },
 }
 
-export const Toast: React.FC<ToastProps> = ({
+const Toast: React.FC<ToastProps> = ({
   message,
   type = "info",
   isVisible,
@@ -53,3 +53,5 @@ export const Toast: React.FC<ToastProps> = ({
     </div>
   )
 }
+
+export default Toast;

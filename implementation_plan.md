@@ -672,36 +672,36 @@ graph LR
 ### 📌 Phase 3: Module 2 — Category & Transaction Management
 > **Estimated Effort:** 2-3 sessions
 
-- [ ] **2.1 Define `Category` model in `schema.prisma`:** Backend — Prisma Schema
-- [ ] **2.2 Create Category CRUD controller + routes:** Backend — Controller/Routes
-- [ ] **2.3 Define `Transaction` model in `schema.prisma` with account & category refs:** Backend — Prisma Schema
-- [ ] **2.4 Create `transactionController.js` — CRUD with **balance recalculation logic**:** Backend — Controller
-- [ ] **2.5 Implement balance update service:** on create/update/delete transaction, recalculate `Account.currentBalance` (Backend — Service)
-- [ ] **2.6 Create transaction routes with query param filtering:** Backend — Routes
-- [ ] **2.7 Seed default categories:** (Food, Transport, Salary, Utilities, etc.) (Backend — Seed Script)
-- [ ] **2.8 Create `categoryApi.ts` and `transactionApi.ts`:** Frontend — API
-- [ ] **2.9 Build `TransactionForm.tsx` with mandatory account dropdown:** Frontend — Component
-- [ ] **2.10 Build `TransactionList.tsx` with color-coded amounts:** Frontend — Component
-- [ ] **2.11 Build `TransactionFilters.tsx` (type, account, category, date range):** Frontend — Component
-- [ ] **2.12 Build `TransactionsPage.tsx`:** Frontend — Page
-- [ ] **2.13 Test:** Add credit to "Paresh - HDFC" → verify balance increases. Add debit → verify balance decreases. (Verification)
+- [x] **2.1 Define `Category` model in `schema.prisma`:** Backend — Prisma Schema
+- [x] **2.2 Create Category CRUD controller + routes:** Backend — Controller/Routes
+- [x] **2.3 Define `Transaction` model in `schema.prisma` with account & category refs:** Backend — Prisma Schema
+- [x] **2.4 Create `transactionController.js` — CRUD with **balance recalculation logic**:** Backend — Controller
+- [x] **2.5 Implement balance update service:** on create/update/delete transaction, recalculate `Account.currentBalance` (Backend — Service)
+- [x] **2.6 Create transaction routes with query param filtering:** Backend — Routes
+- [x] **2.7 Seed default categories:** (Food, Transport, Salary, Utilities, etc.) (Backend — Seed Script)
+- [x] **2.8 Create `categoryApi.ts` and `transactionApi.ts`:** Frontend — API
+- [x] **2.9 Build `TransactionForm.tsx` with mandatory account dropdown:** Frontend — Component
+- [x] **2.10 Build `TransactionList.tsx` with color-coded amounts:** Frontend — Component
+- [x] **2.11 Build `TransactionFilters.tsx` (type, account, category, date range):** Frontend — Component
+- [x] **2.12 Build `TransactionsPage.tsx`:** Frontend — Page
+- [x] **2.13 Test:** Add credit to "Paresh - HDFC" → verify balance increases. Add debit → verify balance decreases. (Verification)
 
 ---
 
 ### 📌 Phase 4: Module 3 — Dynamic Item & Daily Tracking
 > **Estimated Effort:** 2-3 sessions
 
-- [ ] **3.1 Define `DynamicItem` model in `schema.prisma`:** Backend — Prisma Schema
-- [ ] **3.2 Create DynamicItem CRUD controller + routes:** Backend — Controller/Routes
-- [ ] **3.3 Define `DailyLog` model in `schema.prisma`:** Backend — Prisma Schema
-- [ ] **3.4 Create `dailyLogController.js` with upsert and bulk-entry endpoints:** Backend — Controller
-- [ ] **3.5 Create daily log routes including calendar data endpoint:** Backend — Routes
-- [ ] **3.6 Create `dynamicItemApi.ts` and `dailyLogApi.ts`:** Frontend — API
-- [ ] **3.7 Build `DynamicItemForm.tsx` (create/edit item):** Frontend — Component
-- [ ] **3.8 Build `DailyLogGrid.tsx` — Calendar/grid view with editable cells:** Frontend — Component
-- [ ] **3.9 Build `QuickEntryRow.tsx` — Quick log for today's items:** Frontend — Component
-- [ ] **3.10 Build `DailyTrackerPage.tsx`:** Frontend — Page
-- [ ] **3.11 Test:** Create "Milk" item → log 2L for July 1, 1.5L for July 2 → verify grid display (Verification)
+- [x] **3.1 Define `DynamicItem` model in `schema.prisma`:** Backend — Prisma Schema
+- [x] **3.2 Create DynamicItem CRUD controller + routes:** Backend — Controller/Routes
+- [x] **3.3 Define `DailyLog` model in `schema.prisma`:** Backend — Prisma Schema
+- [x] **3.4 Create `dailyLogController.js` with upsert and bulk-entry endpoints:** Backend — Controller
+- [x] **3.5 Create daily log routes including calendar data endpoint:** Backend — Routes
+- [x] **3.6 Create `dynamicItemApi.ts` and `dailyLogApi.ts`:** Frontend — API
+- [x] **3.7 Build `DynamicItemForm.tsx` (create/edit item):** Frontend — Component
+- [x] **3.8 Build single-item UI (TrackerPage) with Recent Logs:** Frontend — Component
+- [x] **3.9 Build Quick Entry logging UI (quantity/amount):** Frontend — Component
+- [x] **3.10 Build `TrackerPage.tsx`:** Frontend — Page
+- [x] **3.11 Test:** Create "Milk" item → log quantities → verify recent logs display correctly (Verification)
 
 ---
 

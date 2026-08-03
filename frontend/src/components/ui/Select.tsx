@@ -12,7 +12,7 @@ export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectE
   placeholder?: string
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, error, options, placeholder = "Select an option", id, ...props }, ref) => {
     const selectId = id || label?.toLowerCase().replace(/\s+/g, "-")
 
@@ -50,3 +50,5 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   }
 )
 Select.displayName = "Select"
+
+export default Select;

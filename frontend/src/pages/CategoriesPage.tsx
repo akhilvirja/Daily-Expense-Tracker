@@ -3,9 +3,9 @@ import { categoryApi } from "../api/categoryApi"
 import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from "../types"
 import { CategoryList } from "../components/categories/CategoryList"
 import { CategoryForm } from "../components/categories/CategoryForm"
-import { Modal } from "../components/ui/Modal"
-import { Toast } from "../components/ui/Toast"
-import { Button } from "../components/ui/Button"
+import Modal from "../components/ui/Modal"
+import Toast from "../components/ui/Toast"
+import Button from "../components/ui/Button"
 import { Plus } from "lucide-react"
 
 export const CategoriesPage: React.FC = () => {

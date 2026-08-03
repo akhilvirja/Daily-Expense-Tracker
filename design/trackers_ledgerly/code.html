@@ -187,7 +187,7 @@
 <section class="flex-1 lg:max-w-md flex flex-col gap-4">
 <div class="flex justify-between items-center mb-2">
 <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Item Master</h2>
-<button class="bg-primary text-on-primary h-10 px-4 rounded-lg font-body-sm text-body-sm flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm">
+<button class="bg-primary text-on-primary h-10 px-4 rounded-lg font-body-sm text-body-sm flex items-center gap-2 hover:bg-primary-container transition-colors shadow-sm hover:shadow-md">
 <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
                             Add Item
                         </button>
@@ -195,7 +195,7 @@
 <!-- Item Cards (Bento Style) -->
 <div class="grid grid-cols-1 gap-4">
 <!-- Card 1 -->
-<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:shadow-sm transition-shadow group">
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:shadow-sm transition-shadow group ring-2 ring-primary bg-primary-container/5">
 <div class="flex justify-between items-start mb-3">
 <div>
 <h3 class="font-title-md text-title-md text-on-surface">Farm Fresh Milk</h3>
@@ -237,80 +237,7 @@
 </div>
 </section>
 <!-- Right Column: Daily Logs -->
-<section class="flex-[2] flex flex-col gap-4">
-<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-4">
-<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Daily Logs</h2>
-<div class="flex items-center gap-3 w-full sm:w-auto">
-<div class="relative flex-1 sm:flex-none">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">calendar_today</span>
-<input class="pl-10 pr-4 h-10 w-full rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary" type="date" value="2023-10-27"/>
-</div>
-<button class="bg-surface-container-highest text-on-surface h-10 px-4 rounded-lg font-body-sm text-body-sm whitespace-nowrap hover:bg-surface-variant transition-colors border border-outline-variant">
-                                Copy Prev
-                            </button>
-</div>
-</div>
-<!-- Daily Log Table/List -->
-<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden">
-<!-- Header -->
-<div class="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-surface-container-highest bg-surface-bright">
-<div class="col-span-5 font-label-caps text-label-caps text-on-surface-variant">ITEM</div>
-<div class="col-span-3 font-label-caps text-label-caps text-on-surface-variant">QTY</div>
-<div class="col-span-4 font-label-caps text-label-caps text-on-surface-variant text-right">AMOUNT</div>
-</div>
-<!-- Rows -->
-<div class="divide-y divide-surface-container-highest">
-<!-- Row 1 -->
-<div class="flex flex-col sm:grid sm:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-bright transition-colors">
-<div class="col-span-5 w-full">
-<p class="font-body-lg text-body-lg text-on-surface font-medium">Farm Fresh Milk</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">$2.50 / Litre</p>
-</div>
-<div class="col-span-3 w-full flex items-center">
-<div class="flex items-center border border-outline-variant rounded-lg overflow-hidden h-10 bg-surface-container-lowest w-full sm:w-32">
-<button class="px-3 text-on-surface-variant hover:bg-surface-container transition-colors">-</button>
-<input class="w-full text-center border-none p-0 h-full font-tabular-nums text-tabular-nums text-on-surface focus:ring-0" type="number" value="2"/>
-<button class="px-3 text-on-surface-variant hover:bg-surface-container transition-colors">+</button>
-</div>
-</div>
-<div class="col-span-4 w-full text-right flex justify-between sm:block">
-<span class="sm:hidden font-label-caps text-label-caps text-on-surface-variant self-center">Amount</span>
-<span class="font-tabular-nums text-tabular-nums text-on-surface font-semibold text-lg">$5.00</span>
-</div>
-</div>
-<!-- Row 2 -->
-<div class="flex flex-col sm:grid sm:grid-cols-12 gap-4 p-4 items-center hover:bg-surface-bright transition-colors">
-<div class="col-span-5 w-full">
-<p class="font-body-lg text-body-lg text-on-surface font-medium">Morning Newspaper</p>
-<p class="font-body-sm text-body-sm text-on-surface-variant">$1.00 / Copy</p>
-</div>
-<div class="col-span-3 w-full flex items-center">
-<div class="flex items-center border border-outline-variant rounded-lg overflow-hidden h-10 bg-surface-container-lowest w-full sm:w-32">
-<button class="px-3 text-on-surface-variant hover:bg-surface-container transition-colors">-</button>
-<input class="w-full text-center border-none p-0 h-full font-tabular-nums text-tabular-nums text-on-surface focus:ring-0" type="number" value="1"/>
-<button class="px-3 text-on-surface-variant hover:bg-surface-container transition-colors">+</button>
-</div>
-</div>
-<div class="col-span-4 w-full text-right flex justify-between sm:block">
-<span class="sm:hidden font-label-caps text-label-caps text-on-surface-variant self-center">Amount</span>
-<span class="font-tabular-nums text-tabular-nums text-on-surface font-semibold text-lg">$1.00</span>
-</div>
-</div>
-</div>
-<!-- Footer Totals -->
-<div class="bg-surface-container-low p-4 flex justify-between items-center border-t border-outline-variant">
-<span class="font-title-md text-title-md text-on-surface-variant">Daily Total</span>
-<span class="font-tabular-nums text-tabular-nums text-primary font-bold text-xl">$6.00</span>
-</div>
-</div>
-<!-- Action Area -->
-<div class="mt-4 flex justify-end">
-<button class="bg-tertiary-container text-on-tertiary-container h-10 px-6 rounded-lg font-body-sm text-body-sm flex items-center gap-2 hover:opacity-90 transition-opacity shadow-sm">
-<span class="material-symbols-outlined" style="font-size: 18px;">receipt</span>
-                            Generate Bill
-                        </button>
-</div>
-</section>
+<section class="flex-[2] flex flex-col gap-4"><div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-4"><h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Daily Logs</h2><div class="flex items-center gap-3 w-full sm:w-auto"><div class="relative flex-1 sm:flex-none"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">calendar_today</span><input class="pl-10 pr-4 h-10 w-full rounded-lg border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:ring-2 focus:ring-primary focus:border-primary" type="date" value="2023-10-27"/></div><button class="bg-surface-container-highest text-on-surface h-10 px-4 rounded-lg font-body-sm text-body-sm whitespace-nowrap hover:bg-surface-variant transition-colors border border-outline-variant">Copy Prev</button></div></div><div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 shadow-sm"><div class="flex flex-col md:flex-row justify-between items-center gap-6"><div class="flex-1"><span class="font-label-caps text-label-caps text-on-surface-variant block mb-1">LOGGING FOR</span><h3 class="font-headline-lg text-headline-lg text-on-surface">Farm Fresh Milk</h3><p class="font-body-sm text-body-sm text-on-surface-variant">$2.50 / Litre</p></div><div class="flex flex-col items-center gap-3"><span class="font-label-caps text-label-caps text-on-surface-variant">QUANTITY</span><div class="flex items-center border border-outline-variant rounded-full overflow-hidden h-12 bg-surface-container-low"><button class="px-4 text-on-surface-variant hover:bg-surface-container transition-colors text-xl">-</button><input class="w-16 text-center border-none bg-transparent p-0 h-full font-tabular-nums text-xl text-on-surface focus:ring-0" type="number" value="2"/><button class="px-4 text-on-surface-variant hover:bg-surface-container transition-colors text-xl">+</button></div></div><div class="text-right"><span class="font-label-caps text-label-caps text-on-surface-variant block mb-1">TOTAL FOR DAY</span><span class="font-tabular-nums text-primary font-bold text-3xl">$5.00</span></div></div><div class="mt-6 pt-6 border-t border-surface-container-highest flex justify-end"><button class="bg-primary text-on-primary h-10 px-6 rounded-lg font-body-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"><span class="material-symbols-outlined text-sm">save</span>Save Entry</button></div></div><div class="mt-4"><h4 class="font-label-caps text-label-caps text-on-surface-variant mb-3 px-1">Recent Logs</h4><div class="bg-surface-container-lowest rounded-xl border border-outline-variant divide-y divide-surface-container-highest"><div class="p-4 flex justify-between items-center hover:bg-surface-bright transition-colors"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant">history</span><span class="font-body-lg text-body-lg text-on-surface">Oct 26, 2023</span></div><span class="font-tabular-nums text-body-lg text-on-surface-variant">2 Litres — <span class="text-on-surface font-semibold">$5.00</span></span></div><div class="p-4 flex justify-between items-center hover:bg-surface-bright transition-colors"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant">history</span><span class="font-body-lg text-body-lg text-on-surface">Oct 25, 2023</span></div><span class="font-tabular-nums text-body-lg text-on-surface-variant">1.5 Litres — <span class="text-on-surface font-semibold">$3.75</span></span></div><div class="p-4 flex justify-between items-center hover:bg-surface-bright transition-colors"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-on-surface-variant">history</span><span class="font-body-lg text-body-lg text-on-surface">Oct 24, 2023</span></div><span class="font-tabular-nums text-body-lg text-on-surface-variant">2 Litres — <span class="text-on-surface font-semibold">$5.00</span></span></div></div></div><div class="mt-8 flex justify-end"><button class="bg-surface-container-highest text-on-surface h-12 px-8 rounded-xl font-title-md text-title-md flex items-center gap-3 hover:bg-surface-variant transition-colors border border-outline-variant w-full sm:w-auto"><span class="material-symbols-outlined">receipt_long</span>Generate Bill &amp; Select Date Range</button></div></section>
 </div>
 </main>
 </div>

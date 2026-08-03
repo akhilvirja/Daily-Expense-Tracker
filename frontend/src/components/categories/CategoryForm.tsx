@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from "../../types"
-import { Input } from "../ui/Input"
-import { Button } from "../ui/Button"
+import Input from "../ui/Input"
+import Button from "../ui/Button"
 
 interface CategoryFormProps {
   category?: Category | null

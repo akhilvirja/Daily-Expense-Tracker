@@ -1,7 +1,7 @@
 import React from "react"
 import type { Account } from "../../types"
-import { Card } from "../ui/Card"
-import { Badge } from "../ui/Badge"
+import Card from "../ui/Card"
+import Badge from "../ui/Badge"
 import { Landmark, Banknote, Edit2, Archive, ArchiveRestore, Trash2 } from "lucide-react"
 
 interface AccountListProps {

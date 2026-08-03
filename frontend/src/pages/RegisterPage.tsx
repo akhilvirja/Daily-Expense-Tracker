@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/authApi';
-import { Toast } from '../components/ui/Toast';
+import Toast from '../components/ui/Toast';
 import { Landmark, Eye, EyeOff, UserPlus } from 'lucide-react';
 
 export const RegisterPage: React.FC = () => {

@@ -87,7 +87,6 @@ const TableCell = React.forwardRef<
 TableCell.displayName = "TableCell"
 
 export {
-  Table,
   TableHeader,
   TableBody,
   TableFooter,
@@ -95,3 +94,5 @@ export {
   TableHead,
   TableCell,
 }
+
+export default Table
