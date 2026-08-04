@@ -77,6 +77,10 @@ const TrackerPage: React.FC = () => {
     try {
       const data = await trackerApi.getItems();
       setItems(data);
+      setSelectedItem(prev => {
+        if (!prev) return null;
+        return data.find(i => i.id === prev.id) || prev;
+      });
     } catch (error) {
       console.error('Failed to fetch items', error);
     }

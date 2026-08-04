@@ -1,11 +1,11 @@
 import React from "react"
 import type { Account } from "../../types"
 import Card from "../ui/Card"
-import { Landmark, Banknote, Edit2, Trash2 } from "lucide-react"
+import { Landmark, Banknote, Trash2 } from "lucide-react"
 
 interface AccountListProps {
   accounts: Account[]
-  onEdit: (account: Account) => void
+
   onDelete: (account: Account) => void
   onToggleStatus: (account: Account) => void
   isLoading?: boolean
@@ -13,7 +13,7 @@ interface AccountListProps {
 
 export const AccountList: React.FC<AccountListProps> = ({
   accounts,
-  onEdit,
+
   onDelete,
   onToggleStatus,
   isLoading = false,
@@ -118,13 +118,7 @@ export const AccountList: React.FC<AccountListProps> = ({
             </div>
 
             <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => onEdit(account)}
-                className="px-3 py-1.5 text-on-surface-variant hover:bg-surface-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"
-                title="Edit Account"
-              >
-                <Edit2 size={16} /> Edit
-              </button>
+
               <button
                 onClick={() => onDelete(account)}
                 className="px-3 py-1.5 text-error hover:bg-error-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"

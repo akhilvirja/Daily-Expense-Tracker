@@ -12,7 +12,7 @@ import { STATUS_MESSAGES } from '../constants/statusMessages.js';
  * Helper: Compute the running balance for an account.
  * Balance = openingBalance + sum(credits) - sum(debits)
  */
-const computeBalance = async (accountId) => {
+export const computeBalance = async (accountId) => {
     const result = await prisma.transaction.groupBy({
         by: ['type'],
         where: { accountId },

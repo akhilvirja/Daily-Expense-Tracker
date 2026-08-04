@@ -24,6 +24,7 @@ router
   .route('/:id')
   .get(getCategory)
   .put(validate(updateCategorySchema), updateCategory)
+  .patch(validate(updateCategorySchema), updateCategory)
   .delete(deleteCategory);
 
 export default router;

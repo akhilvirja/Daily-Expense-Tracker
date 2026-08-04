@@ -4,6 +4,7 @@ import { sendSuccess, sendError, sendPaginatedSuccess } from '../utils/response.
 import { getPaginationParams, getPaginationMeta } from '../utils/pagination.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
 import { STATUS_MESSAGES } from '../constants/statusMessages.js';
+import { computeBalance } from './accountController.js';
 
 /**
  * @desc    Get all transactions for the authenticated user (with pagination & filters)
@@ -87,6 +88,14 @@ export const createTransaction = asyncHandler(async (req, res) => {
     });
     if (!category) {
       return sendError(res, STATUS_CODES.NOT_FOUND, 'Category not found');
+    }
+  }
+
+  // Check for insufficient balance on debit transactions
+  if (type === 'debit') {
+    const currentBalance = await computeBalance(accountId);
+    if (currentBalance < Number(amount)) {
+      return sendError(res, STATUS_CODES.BAD_REQUEST, 'Insufficient balance in the selected account');
     }
   }
 

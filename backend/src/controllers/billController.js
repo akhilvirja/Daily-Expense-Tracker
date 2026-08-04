@@ -3,6 +3,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendSuccess, sendError, sendPaginatedSuccess } from '../utils/response.js';
 import { getPaginationParams, getPaginationMeta } from '../utils/pagination.js';
 import { STATUS_CODES } from '../constants/statusCodes.js';
+import { computeBalance } from './accountController.js';
 
 /**
  * @desc    Get all bills for the authenticated user (with pagination & status filter)
@@ -164,6 +165,12 @@ export const payBill = asyncHandler(async (req, res) => {
 
   if (!account) {
     return sendError(res, STATUS_CODES.NOT_FOUND, 'Active account not found');
+  }
+
+  // Check for sufficient balance before paying
+  const currentBalance = await computeBalance(accountId);
+  if (currentBalance < Number(bill.totalAmount)) {
+    return sendError(res, STATUS_CODES.BAD_REQUEST, 'Insufficient balance in the selected account');
   }
 
   const paymentDate = new Date(paidOn);
