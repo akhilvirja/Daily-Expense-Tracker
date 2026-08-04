@@ -6,7 +6,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { PublicRoute } from './components/auth/PublicRoute';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
-// import { DashboardPage } from './pages/DashboardPage';
+import { DashboardPage } from './pages/DashboardPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import TrackerPage from './pages/TrackerPage';
@@ -27,8 +27,8 @@ const App: React.FC = () => {
                     <Route element={<ProtectedRoute />}>
                         {/* Wrap routes in MainLayout for sidebar */}
                         <Route path="/" element={<MainLayout />}>
-                            {/* Redirect root to Dashboard (to be built in later phase, for now redirect to Accounts) */}
-                            <Route index element={<Navigate to="/accounts" replace />} />
+                            <Route index element={<DashboardPage />} />
+                            <Route path="dashboard" element={<DashboardPage />} />
                             
                             {/* Phase 1: Accounts */}
                             <Route path="accounts" element={<AccountsPage />} />

@@ -146,11 +146,21 @@ const TrackerPage: React.FC = () => {
         itemId: selectedItem.id,
         logDate: date,
         quantity: currentQuantity,
-        amount: currentAmount
+        amount: currentAmount,
       });
       await loadRecentLogs(selectedItem.id);
-    } catch (error) {
+      setToast({
+        isVisible: true,
+        message: 'Log saved successfully!',
+        type: 'success',
+      });
+    } catch (error: any) {
       console.error('Failed to save log', error);
+      setToast({
+        isVisible: true,
+        message: error?.response?.data?.message || 'Failed to save log',
+        type: 'error',
+      });
     } finally {
       setIsSavingLog(false);
     }

@@ -9,7 +9,8 @@ import Modal from "../components/ui/Modal"
 import Toast from "../components/ui/Toast"
 import Button from "../components/ui/Button"
 import Select from "../components/ui/Select"
-import { Plus, Search } from "lucide-react"
+import Input from "../components/ui/Input"
+import { Plus } from "lucide-react"
 
 export const TransactionsPage: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([])
@@ -210,19 +211,13 @@ export const TransactionsPage: React.FC = () => {
         
         {/* Search */}
         <div className="flex-2 min-w-[250px]">
-          <label className="block font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-wider opacity-0 hidden md:block">
-            Search
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" size={16} />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={e => handleSearchChange(e.target.value)}
-              className="w-full bg-surface border border-outline-variant rounded-lg pl-9 pr-3 py-2 text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-sm text-body-sm h-[40px] placeholder-on-surface-variant/50" 
-              placeholder="Search description..." 
-            />
-          </div>
+          <Input
+            label="Search"
+            type="text"
+            value={searchQuery}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            placeholder="Search description..."
+          />
         </div>
       </div>
 
@@ -243,7 +238,7 @@ export const TransactionsPage: React.FC = () => {
         size="md"
       >
         <TransactionForm
-          accounts={accounts}
+          accounts={accounts.filter((a) => a.isActive)}
           categories={categories}
           onSubmit={handleFormSubmit}
           onCancel={handleCloseModal}

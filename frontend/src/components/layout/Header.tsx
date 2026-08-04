@@ -39,12 +39,6 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
             </div>
             
             <div className="flex items-center gap-4">
-                <button 
-                    className="flex items-center justify-center p-1 hover:bg-surface-container rounded-full transition-colors"
-                    aria-label="Search"
-                >
-                    <Search className="text-primary" size={24} />
-                </button>
                 
                 {/* User Avatar */}
                 <div
