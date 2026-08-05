@@ -708,18 +708,18 @@ graph LR
 ### 📌 Phase 5: Module 4 — Automated Billing & Payment
 > **Estimated Effort:** 2-3 sessions
 
-- [ ] **4.1 Define `Bill` model in `schema.prisma`:** Backend — Prisma Schema
-- [ ] **4.2 Create `billingService.js` — aggregation logic (sum daily logs, calculate total):** Backend — Service
-- [ ] **4.3 Create bill generation endpoint (preview + confirm):** Backend — Controller
-- [ ] **4.4 Create bill payment endpoint:** **atomic operation:** update bill status + create debit transaction + update account balance (Backend — Controller)
-- [ ] **4.5 Create bill routes:** Backend — Routes
-- [ ] **4.6 Create `billApi.ts`:** Frontend — API
-- [ ] **4.7 Build `BillGenerator.tsx` (item + date range selector + preview):** Frontend — Component
-- [ ] **4.8 Build `BillCard.tsx` (bill summary with status badge):** Frontend — Component
-- [ ] **4.9 Build `PaymentModal.tsx` (account selector for payment):** Frontend — Component
-- [ ] **4.10 Build `BillList.tsx` (filterable list of generated bills):** Frontend — Component
-- [ ] **4.11 Build `BillingPage.tsx`:** Frontend — Page
-- [ ] **4.12 Test:** Generate bill for Milk (July 1-31) → verify total → pay from "Paresh - HDFC" → verify bill status = Paid, debit transaction created, account balance updated (Verification)
+- [x] **4.1 Define `Bill` model in `schema.prisma`:** Backend — Prisma Schema
+- [x] **4.2 Create `billingService.js` — aggregation logic (sum daily logs, calculate total):** Backend — Service
+- [x] **4.3 Create bill generation endpoint (preview + confirm):** Backend — Controller
+- [x] **4.4 Create bill payment endpoint:** **atomic operation:** update bill status + create debit transaction + update account balance (Backend — Controller)
+- [x] **4.5 Create bill routes:** Backend — Routes
+- [x] **4.6 Create `billApi.ts`:** Frontend — API
+- [x] **4.7 Build `BillGenerator.tsx` (item + date range selector + preview):** Frontend — Component
+- [x] **4.8 Build `BillCard.tsx` (bill summary with status badge):** Frontend — Component
+- [x] **4.9 Build `PaymentModal.tsx` (account selector for payment):** Frontend — Component
+- [x] **4.10 Build `BillList.tsx` (filterable list of generated bills):** Frontend — Component
+- [x] **4.11 Build `BillingPage.tsx`:** Frontend — Page
+- [x] **4.12 Test:** Generate bill for Milk (July 1-31) → verify total → pay from "Paresh - HDFC" → verify bill status = Paid, debit transaction created, account balance updated (Verification)
 
 ---
 

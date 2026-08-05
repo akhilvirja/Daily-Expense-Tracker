@@ -10,7 +10,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import TrackerPage from './pages/TrackerPage';
-import BillingPage from './pages/BillingPage';
+import  BillingPage from './pages/BillingPage';
+import { ReportsPage } from './pages/ReportsPage';
 
 const App: React.FC = () => {
     return (
@@ -44,9 +45,9 @@ const App: React.FC = () => {
                             
                             {/* Phase 4: Billing Module */}
                             <Route path="billing" element={<BillingPage />} />
+                            <Route path="reports" element={<ReportsPage />} />
                             
                             {/* Placeholder routes for future modules */}
-                            <Route path="reports" element={<div style={{ padding: '2rem' }}>Reports Module (Phase 5)</div>} />
                             <Route path="settings" element={<div style={{ padding: '2rem' }}>Settings (Coming Soon)</div>} />
                         </Route>
                     </Route>

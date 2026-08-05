@@ -8,6 +8,7 @@ import transactionRoutes from './transaction.routes.js';
 import trackerRoutes from './tracker.routes.js';
 import billRoutes from './bill.routes.js';
 import dashboardRoutes from './dashboard.routes.js';
+import reportRoutes from './report.routes.js';
 
 const router = Router();
 
@@ -22,6 +23,6 @@ router.use('/transactions', transactionRoutes);
 router.use('/trackers', trackerRoutes);
 router.use('/bills', billRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/reports', reportRoutes);
 
 export default router;
-
