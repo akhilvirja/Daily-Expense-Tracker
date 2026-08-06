@@ -51,10 +51,6 @@ export const getDashboard = asyncHandler(async (req, res) => {
           gte: currentMonthStart,
           lte: currentMonthEnd,
         },
-        OR: [
-          { categoryId: null },
-          { category: { isSystem: false } }
-        ]
       },
       _sum: { amount: true },
     }),
@@ -74,10 +70,6 @@ export const getDashboard = asyncHandler(async (req, res) => {
           gte: sixMonthsAgo,
           lte: currentMonthEnd,
         },
-        OR: [
-          { categoryId: null },
-          { category: { isSystem: false } }
-        ]
       },
       select: {
         type: true,
