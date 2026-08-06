@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ledgerly - Bills Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "secondary": "#515f74",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-container": "#f4fffc",
+                        "primary-fixed": "#89f5e7",
+                        "on-surface-variant": "#3d4947",
+                        "primary-fixed-dim": "#6bd8cb",
+                        "surface": "#f7f9fb",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#00201d",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "tertiary": "#924628",
+                        "surface-container": "#eceef0",
+                        "on-tertiary-fixed-variant": "#773215",
+                        "on-secondary-container": "#57657a",
+                        "inverse-primary": "#6bd8cb",
+                        "secondary-fixed": "#d5e3fc",
+                        "tertiary-fixed": "#ffdbce",
+                        "on-tertiary-container": "#fffbff",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "primary-container": "#008378",
+                        "tertiary-container": "#b05e3d",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-primary": "#ffffff",
+                        "on-background": "#191c1e",
+                        "surface-container-highest": "#e0e3e5",
+                        "error-container": "#ffdad6",
+                        "outline": "#6d7a77",
+                        "secondary-container": "#d5e3fc",
+                        "primary": "#00685f",
+                        "surface-bright": "#f7f9fb",
+                        "surface-tint": "#006a61",
+                        "inverse-surface": "#2d3133",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-variant": "#e0e3e5",
+                        "on-surface": "#191c1e",
+                        "on-primary-fixed-variant": "#005049",
+                        "background": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "on-tertiary-fixed": "#370e00",
+                        "outline-variant": "#bcc9c6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "margin-desktop": "32px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "tabular-nums": ["Inter"],
+                        "title-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "tabular-nums": ["14px", { "lineHeight": "1.5", "fontWeight": "500" }],
+                        "title-md": ["20px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.25", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-lg text-body-lg antialiased">
+<div class="flex h-screen overflow-hidden">
+<!-- Side NavBar -->
+<nav class="hidden md:flex flex-col fixed left-0 top-0 h-screen w-64 p-4 z-40 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline flat no shadows">
+<div class="mb-8 px-4">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">Ledgerly</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Calm Finance</p>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-title-md text-title-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+<span class="font-title-md text-title-md">Accounts</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-title-md text-title-md">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="font-title-md text-title-md">Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-title-md text-title-md">Trackers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-xl hover:bg-surface-container-highest dark:hover:bg-inverse-surface transition-all scale-[0.98] duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-title-md text-title-md font-bold">Bills</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-title-md text-title-md">Reports</span>
+</a>
+</div>
+<div class="mt-auto">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-xl transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-title-md text-title-md">Sign out</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 w-full">
+<!-- Top NavBar -->
+<header class="flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline flat no shadows font-body-lg text-body-lg">
+<div class="flex items-center md:hidden">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Ledgerly</h1>
+</div>
+<div class="hidden md:flex items-center flex-1 max-w-md">
+<!-- Search Bar left -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-xl focus:ring-2 focus:ring-primary text-body-sm font-body-sm" placeholder="Search bills..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors p-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined">settings</span>
+<span class="hidden lg:inline text-body-sm font-body-sm">Settings</span>
+</button>
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A clean, professional headshot avatar of a user in a modern corporate style, well-lit, soft lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa7Dmz4O-U5o9L1tTqO5qUujCW64DDks05agdvfti9mHzxOxNMuyCPytl7eNyz_2kqAJJPO3JbTIgkHBmxDMt2ELDK3N9NmCjYf8WpqmZ51FnKM1tR3Q6mQAeXeVkR_MKw1wCfMSVJt20n_nF-OsYzBPPTVBXGUWXnQL0M4mDtXA17XICCykr9KqEFZaM8GCacJzqlMPFSpuolcjfBHaFEA9ir81hbPveErclsWDNU5hjpMhSlILPWfQ"/>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop bg-surface-bright">
+<div class="max-w-container-max mx-auto space-y-6">
+<!-- Page Header & Filter Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-background">Bills Management</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Track and manage upcoming and past payments.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<select class="bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+<option>Status: All</option>
+<option>Pending</option>
+<option>Paid</option>
+</select>
+<input class="bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="date"/>
+<button class="bg-primary text-on-primary font-title-md text-title-md h-10 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+                                New Bill
+                            </button>
+</div>
+</div>
+<!-- Bills Table Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Bill #</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Item / Vendor</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Period</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Total Amount</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center">Status</th>
+<th class="px-4 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<!-- Pending Row -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-4 py-4 font-tabular-nums text-tabular-nums text-on-surface-variant">#INV-2023-001</td>
+<td class="px-4 py-4">
+<div class="font-title-md text-title-md text-on-background">AWS Hosting</div>
+<div class="text-on-surface-variant">Amazon Web Services</div>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">Oct 2023</td>
+<td class="px-4 py-4 font-tabular-nums text-tabular-nums text-right text-on-background font-semibold">$345.50</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-caps text-label-caps">Pending</span>
+</td>
+<td class="px-4 py-4 text-right">
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-body-sm text-body-sm hover:opacity-90 transition-opacity" onclick="document.getElementById('pay-modal').classList.remove('hidden')">Pay Now</button>
+</td>
+</tr>
+<!-- Paid Row -->
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors group">
+<td class="px-4 py-4 font-tabular-nums text-tabular-nums text-on-surface-variant">#INV-2023-002</td>
+<td class="px-4 py-4">
+<div class="font-title-md text-title-md text-on-background">Office Supplies</div>
+<div class="text-on-surface-variant">Staples Inc.</div>
+</td>
+<td class="px-4 py-4 text-on-surface-variant">Oct 2023</td>
+<td class="px-4 py-4 font-tabular-nums text-tabular-nums text-right text-on-background font-semibold">$120.00</td>
+<td class="px-4 py-4 text-center">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-label-caps">Paid</span>
+</td>
+<td class="px-4 py-4 text-right space-x-2">
+<a class="text-primary hover:underline font-body-sm text-body-sm" href="#">View Transaction</a>
+<button class="text-error hover:bg-error-container hover:text-on-error-container px-2 py-1 rounded transition-colors font-body-sm text-body-sm">Undo</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Pay Now Modal Dialog -->
+<div class="fixed inset-0 z-[100] hidden bg-on-background/20 backdrop-blur-sm flex items-center justify-center p-4" id="pay-modal">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg w-full max-w-md overflow-hidden relative">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-md text-title-md text-on-background">Pay Bill</h3>
+<button class="text-on-surface-variant hover:text-on-background" onclick="document.getElementById('pay-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 space-y-4">
+<div>
+<label class="block font-body-sm text-body-sm text-on-background mb-1">Select Account <span class="text-error">*</span></label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none">
+<option disabled="" selected="" value="">Choose an account</option>
+<option>Main Checking (...1234)</option>
+<option>Business Savings (...5678)</option>
+</select>
+</div>
+<div>
+<label class="block font-body-sm text-body-sm text-on-background mb-1">Paid-on Date</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none" type="date"/>
+</div>
+<div>
+<label class="block font-body-sm text-body-sm text-on-background mb-1">Remarks</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant text-on-background font-body-sm text-body-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary outline-none" placeholder="Optional notes..." rows="2"></textarea>
+</div>
+</div>
+<div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant flex justify-end gap-3">
+<button class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-highest rounded-lg transition-colors" onclick="document.getElementById('pay-modal').classList.add('hidden')">Cancel</button>
+<button class="px-4 py-2 font-title-md text-title-md bg-primary text-on-primary rounded-lg hover:opacity-90 transition-opacity" onclick="showToast(); document.getElementById('pay-modal').classList.add('hidden')">Confirm Payment</button>
+</div>
+</div>
+</div>
+<!-- Toast Notification -->
+<div class="fixed bottom-4 right-4 z-[110] transform translate-y-full opacity-0 transition-all duration-300 flex items-center gap-3 bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-lg shadow-lg" id="toast">
+<span class="material-symbols-outlined text-inverse-primary">check_circle</span>
+<div>
+<p class="font-body-sm text-body-sm font-semibold">Payment Successful</p>
+<p class="font-label-caps text-label-caps opacity-80">RPC: pay_bill completed</p>
+</div>
+</div>
+<script>
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-full', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-full', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body></html>
