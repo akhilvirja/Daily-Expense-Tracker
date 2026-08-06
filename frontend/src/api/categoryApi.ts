@@ -1,4 +1,5 @@
 import type { ApiResponse, Category, CreateCategoryPayload, UpdateCategoryPayload } from '../types';
+export type { Category, CreateCategoryPayload, UpdateCategoryPayload };
 import axiosInstance from './axiosInstance';
 
 export const categoryApi = {

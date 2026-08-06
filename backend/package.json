@@ -12,6 +12,7 @@
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
     "prisma:studio": "npx prisma studio",
+    "seed": "node src/scripts/seedUserHistory.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

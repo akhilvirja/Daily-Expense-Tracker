@@ -64,7 +64,7 @@ const ReportTransactionTable: React.FC<ReportTransactionTableProps> = ({
         const result = await transactionApi.getAll(params);
         setTransactions(result.data || []);
         if (result.pagination) {
-          setTotalPages(result.pagination.pages);
+          setTotalPages(result.pagination.totalPages);
         }
       } catch (error) {
         console.error('Failed to load transactions for report', error);
