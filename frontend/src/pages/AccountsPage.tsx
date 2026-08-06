@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { AccountList } from "../components/accounts/AccountList"
 import { AccountForm } from "../components/accounts/AccountForm"
+import { TransferModal } from "../components/accounts/TransferModal"
 import Modal from "../components/ui/Modal"
 import Toast from "../components/ui/Toast"
 import Button from "../components/ui/Button"
 import { accountApi } from "../api/accountApi"
-import type { Account, CreateAccountPayload, UpdateAccountPayload } from "../types"
-import { Plus } from "lucide-react"
+import { transactionApi } from "../api/transactionApi"
+import type { Account, CreateAccountPayload, UpdateAccountPayload, TransferPayload } from "../types"
+import { Plus, ArrowRightLeft } from "lucide-react"
 
 export const AccountsPage: React.FC = () => {
   // State
@@ -18,6 +20,9 @@ export const AccountsPage: React.FC = () => {
   // Modal State
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  
+  // Transfer Modal State
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
 
   // Toast State
   const [toast, setToast] = useState({
@@ -132,6 +137,22 @@ export const AccountsPage: React.FC = () => {
     }
   }
 
+  const handleTransferSubmit = async (payload: TransferPayload) => {
+    try {
+      setIsActionLoading(true)
+      const response = await transactionApi.transfer(payload)
+      if (response.success) {
+        showToast("Transfer completed successfully", "success")
+        fetchAccounts()
+        setIsTransferModalOpen(false)
+      }
+    } catch (error: any) {
+      showToast(error.message || "Transfer failed", "error")
+    } finally {
+      setIsActionLoading(false)
+    }
+  }
+
   // Filter accounts
   const displayedAccounts = accounts.filter((acc) => (showArchived ? true : acc.isActive))
 
@@ -166,13 +187,23 @@ export const AccountsPage: React.FC = () => {
               </span>
             </label>
           </div>
-          <Button 
-            onClick={handleOpenAccountCreateModal} 
-            icon={<Plus size={16} />}
-            className="w-full sm:w-auto"
-          >
-            Add Account
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button 
+              variant="outline"
+              onClick={() => setIsTransferModalOpen(true)} 
+              icon={<ArrowRightLeft size={16} />}
+              className="w-full sm:w-auto"
+            >
+              Self Transfer
+            </Button>
+            <Button 
+              onClick={handleOpenAccountCreateModal} 
+              icon={<Plus size={16} />}
+              className="w-full sm:w-auto"
+            >
+              Add Account
+            </Button>
+          </div>
         </div>
 
         {/* Account Grid */}
@@ -195,6 +226,21 @@ export const AccountsPage: React.FC = () => {
           account={selectedAccount}
           onSubmit={handleAccountSubmit}
           onCancel={handleCloseAccountModal}
+          isLoading={isActionLoading}
+        />
+      </Modal>
+
+      {/* Transfer Modal */}
+      <Modal
+        isOpen={isTransferModalOpen}
+        onClose={() => setIsTransferModalOpen(false)}
+        title="Transfer Funds"
+        size="md"
+      >
+        <TransferModal
+          accounts={accounts}
+          onSubmit={handleTransferSubmit}
+          onCancel={() => setIsTransferModalOpen(false)}
           isLoading={isActionLoading}
         />
       </Modal>

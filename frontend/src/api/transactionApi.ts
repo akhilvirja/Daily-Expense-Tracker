@@ -1,4 +1,4 @@
-import type { ApiResponse, PaginatedResponse, Transaction, CreateTransactionPayload, UpdateTransactionPayload } from '../types';
+import type { ApiResponse, PaginatedResponse, Transaction, CreateTransactionPayload, UpdateTransactionPayload, TransferPayload } from '../types';
 import axiosInstance from './axiosInstance';
 
 export const transactionApi = {
@@ -24,6 +24,11 @@ export const transactionApi = {
 
     delete: async (id: string): Promise<ApiResponse<void>> => {
         const { data } = await axiosInstance.delete<ApiResponse<void>>(`/transactions/${id}`);
+        return data;
+    },
+
+    transfer: async (payload: TransferPayload): Promise<ApiResponse<Transaction[]>> => {
+        const { data } = await axiosInstance.post<ApiResponse<Transaction[]>>('/transactions/transfer', payload);
         return data;
     },
 };

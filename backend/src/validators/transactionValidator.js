@@ -19,3 +19,14 @@ export const updateTransactionSchema = z.object({
   description: z.string().trim().max(500, 'Description is too long').optional().nullable(),
   occurredOn: z.string().datetime({ message: 'Invalid date format (must be ISO 8601)' }).optional(),
 });
+
+export const transferTransactionSchema = z.object({
+  fromAccountId: z.string().uuid('Invalid source account ID'),
+  toAccountId: z.string().uuid('Invalid destination account ID'),
+  amount: z.number().positive('Amount must be greater than 0'),
+  description: z.string().trim().max(500, 'Description is too long').optional().nullable(),
+  occurredOn: z.string().datetime({ message: 'Invalid date format (must be ISO 8601)' }),
+}).refine(data => data.fromAccountId !== data.toAccountId, {
+  message: "Source and destination accounts must be different",
+  path: ["toAccountId"],
+});

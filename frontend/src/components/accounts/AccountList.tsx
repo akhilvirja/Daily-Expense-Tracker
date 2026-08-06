@@ -100,18 +100,20 @@ export const AccountList: React.FC<AccountListProps> = ({
               <div className="min-w-0">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">Opening Balance</p>
                 <p className="font-tabular-nums text-tabular-nums text-on-surface truncate">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
+                    maximumFractionDigits: 2,
                   }).format(account.openingBalance)}
                 </p>
               </div>
               <div className="text-right min-w-0 flex-shrink-0">
                 <p className="font-body-sm text-body-sm text-on-surface-variant">Running Balance</p>
                 <p className="font-tabular-nums text-tabular-nums text-primary font-bold text-lg truncate">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("en-IN", {
                     style: "currency",
-                    currency: "USD",
+                    currency: "INR",
+                    maximumFractionDigits: 2,
                   }).format(account.currentBalance)}
                 </p>
               </div>

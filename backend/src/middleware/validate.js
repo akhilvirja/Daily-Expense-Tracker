@@ -15,13 +15,16 @@ export const validate = (schema) => {
         const result = schema.safeParse(req.body);
 
         if (!result.success) {
+            const errors = result.error.issues.map((e) => ({
+                field: e.path.join('.'),
+                message: e.message,
+            }));
+            console.error('Validation failed for body:', req.body);
+            console.error('Validation errors:', errors);
             return res.status(STATUS_CODES.BAD_REQUEST).json({
                 success: false,
                 message: STATUS_MESSAGES.ERROR.VALIDATION_ERROR,
-                errors: result.error.issues.map((e) => ({
-                    field: e.path.join('.'),
-                    message: e.message,
-                })),
+                errors,
             });
         }
 

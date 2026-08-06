@@ -231,3 +231,77 @@ export const deleteTransaction = asyncHandler(async (req, res) => {
 
   return sendSuccess(res, STATUS_CODES.OK, null, 'Transaction deleted successfully');
 });
+
+/**
+ * @desc    Transfer funds between two accounts
+ * @route   POST /api/v1/transactions/transfer
+ * @access  Private
+ */
+export const transferTransaction = asyncHandler(async (req, res) => {
+  const { fromAccountId, toAccountId, amount, description, occurredOn } = req.validatedBody;
+
+  // Verify accounts exist and belong to user
+  const [fromAccount, toAccount] = await Promise.all([
+    prisma.account.findFirst({ where: { id: fromAccountId, userId: req.user.id, deletedAt: null } }),
+    prisma.account.findFirst({ where: { id: toAccountId, userId: req.user.id, deletedAt: null } })
+  ]);
+
+  if (!fromAccount) return sendError(res, STATUS_CODES.NOT_FOUND, 'Source account not found');
+  if (!toAccount) return sendError(res, STATUS_CODES.NOT_FOUND, 'Destination account not found');
+
+  // Verify fromAccount has sufficient balance
+  const currentBalance = await computeBalance(fromAccountId);
+  if (currentBalance < Number(amount)) {
+    return sendError(res, STATUS_CODES.BAD_REQUEST, 'Insufficient balance in the source account');
+  }
+
+  // Find or create 'Self Transfer' system category
+  let transferCategory = await prisma.category.findFirst({
+    where: {
+      userId: req.user.id,
+      name: 'Self Transfer',
+      isSystem: true
+    }
+  });
+
+  if (!transferCategory) {
+    transferCategory = await prisma.category.create({
+      data: {
+        userId: req.user.id,
+        name: 'Self Transfer',
+        isSystem: true
+      }
+    });
+  }
+
+  // Create debit and credit transactions atomically
+  const result = await prisma.$transaction(async (tx) => {
+    const debitTx = await tx.transaction.create({
+      data: {
+        userId: req.user.id,
+        accountId: fromAccountId,
+        categoryId: transferCategory.id,
+        type: 'debit',
+        amount,
+        description: description || `Self Transfer to ${toAccount.name}`,
+        occurredOn: new Date(occurredOn),
+      },
+    });
+
+    const creditTx = await tx.transaction.create({
+      data: {
+        userId: req.user.id,
+        accountId: toAccountId,
+        categoryId: transferCategory.id,
+        type: 'credit',
+        amount,
+        description: description || `Self Transfer from ${fromAccount.name}`,
+        occurredOn: new Date(occurredOn),
+      },
+    });
+
+    return [debitTx, creditTx];
+  });
+
+  return sendSuccess(res, STATUS_CODES.CREATED, result, 'Transfer successful');
+});

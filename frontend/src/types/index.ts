@@ -149,6 +149,13 @@ export interface UpdateTransactionPayload {
     type?: TxnType;
     amount?: number;
     description?: string;
-    occurredOn?: string;
     billId?: string;
+}
+
+export interface TransferPayload {
+    fromAccountId: string;
+    toAccountId: string;
+    amount: number;
+    description?: string;
+    occurredOn: string;
 }
