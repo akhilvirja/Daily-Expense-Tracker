@@ -207,7 +207,7 @@ export const DashboardPage: React.FC = () => {
           subtitle: 'Across all accounts',
         },
         {
-          label: 'Monthly Income',
+          label: 'Monthly Credit',
           value: formatCurrency(data.monthlyCredit),
           icon: TrendingUp,
           iconBg: 'bg-secondary-container',
@@ -215,7 +215,7 @@ export const DashboardPage: React.FC = () => {
           subtitle: 'This month',
         },
         {
-          label: 'Monthly Expenses',
+          label: 'Monthly Debit',
           value: formatCurrency(data.monthlyDebit),
           icon: TrendingDown,
           iconBg: 'bg-error-container',
@@ -286,7 +286,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Income vs Expense Bar Chart */}
+        {/* Credit vs Debit Bar Chart */}
         <div className="lg:col-span-7 flex flex-col">
           {isLoading ? (
             <ChartSkeleton />
@@ -298,7 +298,7 @@ export const DashboardPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <BarChart3 size={20} className="text-on-surface-variant" />
                       <h3 className="font-headline-lg text-headline-lg text-on-surface">
-                        Income vs Expenses
+                        Credit vs Debit
                       </h3>
                     </div>
                     <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
@@ -338,14 +338,14 @@ export const DashboardPage: React.FC = () => {
                         <Tooltip content={<BarTooltip />} cursor={{ fill: 'var(--color-surface-container-low)', opacity: 0.7 }} />
                         <Bar
                           dataKey="income"
-                          name="Income"
+                          name="Credit"
                           fill="#008378"
                           radius={[5, 5, 0, 0]}
                           maxBarSize={40}
                         />
                         <Bar
                           dataKey="expense"
-                          name="Expenses"
+                          name="Debit"
                           fill="#ba1a1a"
                           radius={[5, 5, 0, 0]}
                           maxBarSize={40}
@@ -369,11 +369,11 @@ export const DashboardPage: React.FC = () => {
                 <div className="flex items-center justify-center gap-6 mt-4 pt-3 border-t border-outline-variant/30">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: '#008378' }} />
-                    <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Income</span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Credit</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: '#ba1a1a' }} />
-                    <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Expenses</span>
+                    <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">Debit</span>
                   </div>
                 </div>
               )}
@@ -381,7 +381,7 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
 
-        {/* Expense by Category Pie Chart */}
+        {/* Debit by Category Pie Chart */}
         <div className="lg:col-span-5 flex flex-col">
           {isLoading ? (
             <ChartSkeleton />
@@ -476,9 +476,9 @@ export const DashboardPage: React.FC = () => {
                 ) : (
                   <div className="h-[300px] sm:h-[320px] flex flex-col items-center justify-center text-on-surface-variant">
                     <PieChartIcon size={48} className="text-outline mb-3 opacity-50" />
-                    <p className="font-title-md text-title-md text-on-surface">No expenses this month</p>
+                    <p className="font-title-md text-title-md text-on-surface">No debits this month</p>
                     <p className="font-body-sm text-body-sm mt-1">
-                      Category breakdown will appear when you log expenses.
+                      Category breakdown will appear when you log debits.
                     </p>
                   </div>
                 )}

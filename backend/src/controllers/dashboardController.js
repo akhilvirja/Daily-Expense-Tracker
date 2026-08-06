@@ -51,6 +51,10 @@ export const getDashboard = asyncHandler(async (req, res) => {
           gte: currentMonthStart,
           lte: currentMonthEnd,
         },
+        OR: [
+          { categoryId: null },
+          { category: { isSystem: false } }
+        ]
       },
       _sum: { amount: true },
     }),
@@ -70,6 +74,10 @@ export const getDashboard = asyncHandler(async (req, res) => {
           gte: sixMonthsAgo,
           lte: currentMonthEnd,
         },
+        OR: [
+          { categoryId: null },
+          { category: { isSystem: false } }
+        ]
       },
       select: {
         type: true,
@@ -91,7 +99,7 @@ export const getDashboard = asyncHandler(async (req, res) => {
       select: {
         amount: true,
         category: {
-          select: { name: true },
+          select: { name: true, isSystem: true },
         },
       },
     }),
@@ -149,6 +157,7 @@ export const getDashboard = asyncHandler(async (req, res) => {
   // --- Expense by Category ---
   const categoryMap = new Map();
   for (const txn of categoryExpenses) {
+    if (txn.category?.isSystem) continue;
     const catName = txn.category?.name || 'Uncategorized';
     const current = categoryMap.get(catName) || 0;
     categoryMap.set(catName, current + Number(txn.amount));

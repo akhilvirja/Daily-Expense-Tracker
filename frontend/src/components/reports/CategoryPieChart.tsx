@@ -36,11 +36,11 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
-const CustomTooltip: React.FC<any> = ({ active, payload, totalExpense }) => {
+const CustomTooltip: React.FC<any> = ({ active, payload, totalDebit }) => {
   if (active && payload && payload.length) {
     const item = payload[0];
     const value = Number(item.value) || 0;
-    const percentage = totalExpense > 0 ? ((value / totalExpense) * 100).toFixed(1) : '0';
+    const percentage = totalDebit > 0 ? ((value / totalDebit) * 100).toFixed(1) : '0';
 
     return (
       <div className="bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3 shadow-lg z-50 pointer-events-none">
@@ -93,7 +93,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data, isLoading }) => {
   const hasData = data && data.length > 0;
 
-  const totalExpense = useMemo(() => {
+  const totalDebit = useMemo(() => {
     return (data || []).reduce((sum, item) => sum + (Number(item.value) || 0), 0);
   }, [data]);
 
@@ -101,10 +101,10 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data, isLoading }) 
     <Card className="h-full flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-title-lg text-title-lg text-on-surface">Expenses by Category</h3>
+          <h3 className="font-title-lg text-title-lg text-on-surface">Debits by Category</h3>
           {hasData && !isLoading && (
             <span className="font-tabular-nums text-xs text-on-surface-variant bg-surface-container px-2 py-1 rounded-md">
-              Total: <span className="font-semibold text-on-surface">{formatCurrency(totalExpense)}</span>
+              Total: <span className="font-semibold text-on-surface">{formatCurrency(totalDebit)}</span>
             </span>
           )}
         </div>
@@ -118,7 +118,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data, isLoading }) 
           ) : !hasData ? (
             <div className="flex flex-col items-center justify-center text-on-surface-variant py-12">
               <PieChartIcon size={48} className="text-outline mb-2 opacity-50" />
-              <p className="text-sm">No expenses found for this period.</p>
+              <p className="text-sm">No debits found for this period.</p>
             </div>
           ) : (
             <div className="w-full h-[270px] sm:h-[300px]">
@@ -144,7 +144,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data, isLoading }) 
                       />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip totalExpense={totalExpense} />} />
+                  <Tooltip content={<CustomTooltip totalDebit={totalDebit} />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -158,7 +158,7 @@ const CategoryPieChart: React.FC<CategoryPieChartProps> = ({ data, isLoading }) 
           {data.map((entry, index) => {
             const color = PIE_COLORS[index % PIE_COLORS.length];
             const val = Number(entry.value) || 0;
-            const percentage = totalExpense > 0 ? ((val / totalExpense) * 100).toFixed(0) : '0';
+            const percentage = totalDebit > 0 ? ((val / totalDebit) * 100).toFixed(0) : '0';
 
             return (
               <div

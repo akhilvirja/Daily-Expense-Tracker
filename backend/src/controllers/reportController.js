@@ -25,7 +25,11 @@ export const getCategoryReport = asyncHandler(async (req, res) => {
     occurredOn: {
       gte: start,
       lte: end
-    }
+    },
+    OR: [
+      { categoryId: null },
+      { category: { isSystem: false } }
+    ]
   };
 
   if (accountId) filter.accountId = accountId;
@@ -94,7 +98,11 @@ export const getTrendReport = asyncHandler(async (req, res) => {
     occurredOn: {
       gte: start,
       lte: end
-    }
+    },
+    OR: [
+      { categoryId: null },
+      { category: { isSystem: false } }
+    ]
   };
 
   if (accountId) filter.accountId = accountId;

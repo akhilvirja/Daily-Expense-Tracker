@@ -87,7 +87,7 @@ const TrendBarChart: React.FC<TrendBarChartProps> = ({ data, isLoading }) => {
     <Card className="h-full flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-title-lg text-title-lg text-on-surface">Income vs Expenses</h3>
+          <h3 className="font-title-lg text-title-lg text-on-surface">Credit vs Debit</h3>
           {hasData && !isLoading && (
             <div className="flex items-center gap-2">
               <span className="font-tabular-nums text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-md font-semibold">
@@ -133,14 +133,14 @@ const TrendBarChart: React.FC<TrendBarChartProps> = ({ data, isLoading }) => {
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: 'var(--color-surface-container-low)', opacity: 0.7 }} />
                   <Bar 
                     dataKey="income" 
-                    name="Income" 
+                    name="Credit" 
                     fill={COLOR_INCOME} 
                     radius={[4, 4, 0, 0]} 
                     maxBarSize={45}
                   />
                   <Bar 
                     dataKey="expense" 
-                    name="Expenses" 
+                    name="Debit" 
                     fill={COLOR_EXPENSE} 
                     radius={[4, 4, 0, 0]} 
                     maxBarSize={45}
@@ -157,11 +157,11 @@ const TrendBarChart: React.FC<TrendBarChartProps> = ({ data, isLoading }) => {
         <div className="w-full mt-2 pt-2 border-t border-outline-variant/20 flex items-center justify-center gap-6 max-h-[64px] sm:max-h-[72px] px-1">
           <div className="flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant">
             <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: COLOR_INCOME }} />
-            <span>Income</span>
+            <span>Credit</span>
           </div>
           <div className="flex items-center gap-1.5 text-[11px] font-medium text-on-surface-variant">
             <span className="w-2.5 h-2.5 rounded-xs" style={{ backgroundColor: COLOR_EXPENSE }} />
-            <span>Expenses</span>
+            <span>Debit</span>
           </div>
         </div>
       )}
