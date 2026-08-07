@@ -1,6 +1,5 @@
 import type { PaginatedResponse, PaginationMeta } from '../types';
 import axiosInstance from './axiosInstance';
-import type { TrackerItem } from './trackerApi';
 
 export interface Bill {
   id: string;

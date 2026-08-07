@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import type { Account, Category, CreateTransactionPayload, TxnType } from "../../types"
 import Input from "../ui/Input"
 import Button from "../ui/Button"
@@ -81,7 +81,6 @@ export const TransactionForm: React.FC<TransactionFormProps> = ({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
-            icon={<span className="font-tabular-nums text-tabular-nums text-on-surface-variant">₹</span>}
           />
         </div>
         <div>

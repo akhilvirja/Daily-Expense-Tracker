@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Menu, Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 interface HeaderProps {
     onToggleSidebar: () => void;
