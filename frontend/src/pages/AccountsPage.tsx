@@ -3,6 +3,7 @@ import { AccountList } from "../components/accounts/AccountList"
 import { AccountForm } from "../components/accounts/AccountForm"
 import { TransferModal } from "../components/accounts/TransferModal"
 import Modal from "../components/ui/Modal"
+import ConfirmModal from "../components/ui/ConfirmModal"
 import Toast from "../components/ui/Toast"
 import Button from "../components/ui/Button"
 import { accountApi } from "../api/accountApi"
@@ -20,6 +21,7 @@ export const AccountsPage: React.FC = () => {
   // Modal State
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false)
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  const [accountToDelete, setAccountToDelete] = useState<Account | null>(null)
   
   // Transfer Modal State
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
@@ -95,16 +97,16 @@ export const AccountsPage: React.FC = () => {
     }
   }
 
-  const handleDeleteAccount = async (account: Account) => {
-    if (account.currentBalance !== 0) {
-      showToast("Cannot delete account with a non-zero balance.", "warning")
-      return
-    }
+  const handleDeleteAccountRequest = (account: Account) => {
+    setAccountToDelete(account)
+  }
 
-    if (window.confirm(`Are you sure you want to delete "${account.name}"? This action cannot be undone.`)) {
+  const handleDeleteConfirm = async () => {
+    if (!accountToDelete) return;
+
       try {
         setIsActionLoading(true)
-        const response = await accountApi.delete(account.id)
+        const response = await accountApi.delete(accountToDelete.id)
         if (response.success) {
           showToast("Account deleted successfully", "success")
           fetchAccounts()
@@ -113,8 +115,8 @@ export const AccountsPage: React.FC = () => {
         showToast(error.message || "Failed to delete account", "error")
       } finally {
         setIsActionLoading(false)
+        setAccountToDelete(null)
       }
-    }
   }
 
   const handleToggleStatus = async (account: Account) => {
@@ -210,7 +212,7 @@ export const AccountsPage: React.FC = () => {
         <AccountList
           accounts={displayedAccounts}
           isLoading={isAccountsLoading}
-          onDelete={handleDeleteAccount}
+          onDelete={handleDeleteAccountRequest}
           onToggleStatus={handleToggleStatus}
         />
       </section>
@@ -244,6 +246,17 @@ export const AccountsPage: React.FC = () => {
           isLoading={isActionLoading}
         />
       </Modal>
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!accountToDelete}
+        title="Delete Account"
+        message={`Are you sure you want to delete "${accountToDelete?.name}"? This action cannot be undone.`}
+        confirmText={isActionLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setAccountToDelete(null)}
+        isDestructive={true}
+      />
 
       {/* Toast Notifications */}
       <Toast

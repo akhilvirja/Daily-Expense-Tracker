@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import ConfirmModal from "../ui/ConfirmModal"
 import {
   LayoutDashboard,
   Wallet,
@@ -39,11 +40,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const location = useLocation()
   const { logout } = useAuth()
 
-  const handleSignOut = () => {
-    if (window.confirm("Do you want to sign out?")) {
-      logout()
-      window.location.href = "/login"
-    }
+  const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false)
+
+  const handleSignOutConfirm = () => {
+    logout()
+    window.location.href = "/login"
   }
 
   const renderNavLink = (item: NavItem) => {
@@ -102,13 +103,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       <div className="mt-auto pt-4">
         <button
-          onClick={handleSignOut}
+          onClick={() => setIsSignOutModalOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all font-title-md text-title-md"
         >
           <LogOut size={20} />
           Sign out
         </button>
       </div>
+      <ConfirmModal
+        isOpen={isSignOutModalOpen}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        onConfirm={handleSignOutConfirm}
+        onCancel={() => setIsSignOutModalOpen(false)}
+      />
     </nav>
   )
 }

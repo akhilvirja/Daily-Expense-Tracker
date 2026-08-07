@@ -10,6 +10,7 @@ import type { PaginationMeta } from '../types';
 import PayBillModal from '../components/bills/PayBillModal';
 import GenerateBillModal from '../components/bills/GenerateBillModal';
 import Pagination from '../components/ui/Pagination';
+import ConfirmModal from '../components/ui/ConfirmModal';
 
 const BillingPage: React.FC = () => {
   const [bills, setBills] = useState<Bill[]>([]);
@@ -34,6 +35,7 @@ const BillingPage: React.FC = () => {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
+  const [billToUndo, setBillToUndo] = useState<string | null>(null);
 
   const fetchBills = useCallback(async () => {
     try {
@@ -87,14 +89,19 @@ const BillingPage: React.FC = () => {
     }
   };
 
-  const handleUndoPayment = async (billId: string) => {
-    if (window.confirm('Are you sure you want to undo this payment? It will remove the associated transaction.')) {
-      try {
-        await billApi.undoPayment(billId);
-        fetchBills();
-      } catch (error) {
-        console.error('Failed to undo payment', error);
-      }
+  const handleUndoPaymentRequest = (billId: string) => {
+    setBillToUndo(billId);
+  };
+
+  const handleUndoConfirm = async () => {
+    if (!billToUndo) return;
+    try {
+      await billApi.undoPayment(billToUndo);
+      fetchBills();
+    } catch (error) {
+      console.error('Failed to undo payment', error);
+    } finally {
+      setBillToUndo(null);
     }
   };
 
@@ -219,7 +226,7 @@ const BillingPage: React.FC = () => {
                               {bill.paidAccount?.name}
                             </span>
                             <button 
-                              onClick={() => handleUndoPayment(bill.id)}
+                              onClick={() => handleUndoPaymentRequest(bill.id)}
                               className="text-error hover:bg-error-container hover:text-on-error-container px-2 py-1 rounded transition-colors font-body-sm text-body-sm"
                             >
                               Undo
@@ -267,6 +274,16 @@ const BillingPage: React.FC = () => {
         onPay={handlePayBill}
         bill={selectedBill}
         accounts={accounts}
+      />
+
+      <ConfirmModal
+        isOpen={!!billToUndo}
+        title="Undo Payment"
+        message="Are you sure you want to undo this payment? It will remove the associated transaction."
+        confirmText="Undo Payment"
+        onConfirm={handleUndoConfirm}
+        onCancel={() => setBillToUndo(null)}
+        isDestructive={true}
       />
     </>
   );

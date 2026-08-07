@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import Input from "../ui/Input"
 import Select from "../ui/Select"
 import Button from "../ui/Button"
+import { Info } from "lucide-react"
 import type { Account, CreateAccountPayload, UpdateAccountPayload } from "../../types"
 
 interface AccountFormProps {
@@ -126,10 +127,17 @@ export const AccountForm: React.FC<AccountFormProps> = ({
           />
         </div>
         
-        {isEditMode && (
-           <p className="font-body-sm text-body-sm text-on-surface-variant">
+        {isEditMode ? (
+           <p className="font-body-sm text-body-sm text-on-surface-variant mt-2">
              Changing opening balance will adjust the current balance accordingly.
            </p>
+        ) : (
+           <div className="bg-primary-container/20 p-3 rounded-lg border border-primary/20 mt-4 flex gap-3">
+             <Info className="text-primary flex-shrink-0 mt-0.5" size={18} />
+             <p className="font-body-sm text-body-sm text-on-surface-variant">
+               <strong>Note:</strong> Once transactions are linked to this account, you will not be able to delete it.
+             </p>
+           </div>
         )}
       </div>
 

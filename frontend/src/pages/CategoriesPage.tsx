@@ -4,6 +4,7 @@ import type { Category, CreateCategoryPayload, UpdateCategoryPayload } from "../
 import { CategoryList } from "../components/categories/CategoryList"
 import { CategoryForm } from "../components/categories/CategoryForm"
 import Modal from "../components/ui/Modal"
+import ConfirmModal from "../components/ui/ConfirmModal"
 import Toast from "../components/ui/Toast"
 import Button from "../components/ui/Button"
 import { Plus } from "lucide-react"
@@ -14,6 +15,7 @@ export const CategoriesPage: React.FC = () => {
   const [isActionLoading, setIsActionLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null)
 
   const [toast, setToast] = useState({
     isVisible: false,
@@ -83,8 +85,13 @@ export const CategoriesPage: React.FC = () => {
     }
   }
 
-  const handleDeleteCategory = async (category: Category) => {
-    if (window.confirm(`Are you sure you want to delete "${category.name}"?`)) {
+  const handleDeleteCategoryRequest = (category: Category) => {
+    setCategoryToDelete(category)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!categoryToDelete) return;
+
       try {
         setIsActionLoading(true)
         const response = await categoryApi.delete(category.id)
@@ -96,8 +103,8 @@ export const CategoriesPage: React.FC = () => {
         showToast(error.message || "Failed to delete category", "error")
       } finally {
         setIsActionLoading(false)
+        setCategoryToDelete(null)
       }
-    }
   }
 
   return (
@@ -125,7 +132,7 @@ export const CategoriesPage: React.FC = () => {
         categories={categories}
         isLoading={isLoading}
         onEdit={handleOpenEditModal}
-        onDelete={handleDeleteCategory}
+        onDelete={handleDeleteCategoryRequest}
       />
 
       {/* Create/Edit Modal */}
@@ -142,6 +149,17 @@ export const CategoriesPage: React.FC = () => {
           isLoading={isActionLoading}
         />
       </Modal>
+
+      {/* Delete Confirm Modal */}
+      <ConfirmModal
+        isOpen={!!categoryToDelete}
+        title="Delete Category"
+        message={`Are you sure you want to delete "${categoryToDelete?.name}"?`}
+        confirmText={isActionLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setCategoryToDelete(null)}
+        isDestructive={true}
+      />
 
       {/* Toast Notifications */}
       <Toast
