@@ -7,6 +7,7 @@ interface AccountListProps {
   accounts: Account[]
 
   onDelete: (account: Account) => void
+  onEdit: (account: Account) => void
   onToggleStatus: (account: Account) => void
   isLoading?: boolean
 }
@@ -15,6 +16,7 @@ export const AccountList: React.FC<AccountListProps> = ({
   accounts,
 
   onDelete,
+  onEdit,
   onToggleStatus,
   isLoading = false,
 }) => {
@@ -121,6 +123,13 @@ export const AccountList: React.FC<AccountListProps> = ({
 
             <div className="mt-4 flex justify-end gap-2">
 
+              <button
+                onClick={() => onEdit(account)}
+                className="px-3 py-1.5 text-primary hover:bg-primary-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Edit Account"
+              >
+                Edit
+              </button>
               <button
                 onClick={() => onDelete(account)}
                 className="px-3 py-1.5 text-error hover:bg-error-container rounded-md font-body-sm text-body-sm flex items-center gap-1.5 transition-colors cursor-pointer"

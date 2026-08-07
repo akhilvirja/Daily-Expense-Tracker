@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/authApi';
@@ -153,7 +153,7 @@ export const RegisterPage: React.FC = () => {
                     </form>
 
                     {/* Divider */}
-                    <div className="relative my-6">
+                    {/* <div className="relative my-6">
                         <div aria-hidden="true" className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-outline-variant"></div>
                         </div>
@@ -162,10 +162,10 @@ export const RegisterPage: React.FC = () => {
                                 Or continue with
                             </span>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Social Auth */}
-                    <button
+                    {/* <button
                         className="w-full h-10 flex items-center justify-center gap-3 bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded-lg hover:bg-surface-container-low transition-colors"
                         type="button"
                     >
@@ -176,7 +176,7 @@ export const RegisterPage: React.FC = () => {
                             <path d="M12.0004 24C15.2404 24 17.9654 22.935 19.9454 21.095L16.0804 18.095C15.0054 18.82 13.6204 19.245 12.0004 19.245C8.8704 19.245 6.21537 17.135 5.26537 14.29L1.27539 17.385C3.25539 21.31 7.3104 24 12.0004 24Z" fill="#34A853" />
                         </svg>
                         Google
-                    </button>
+                    </button> */}
                 </section>
 
                 {/* Decorative Bottom Bar */}

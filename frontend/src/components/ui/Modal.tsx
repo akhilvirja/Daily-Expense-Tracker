@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 
 export interface ModalProps {
@@ -44,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-on-background/30 backdrop-blur-sm animate-in fade-in duration-150"
       onClick={(e) => {
@@ -80,7 +81,8 @@ const Modal: React.FC<ModalProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 

@@ -213,6 +213,7 @@ export const AccountsPage: React.FC = () => {
           accounts={displayedAccounts}
           isLoading={isAccountsLoading}
           onDelete={handleDeleteAccountRequest}
+          onEdit={handleOpenAccountEditModal}
           onToggleStatus={handleToggleStatus}
         />
       </section>

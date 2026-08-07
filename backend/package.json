@@ -8,7 +8,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "node --experimental-transform-types --watch src/index.js",
-    "start": "node --experimental-transform-types src/index.js",
+    "start": "npx prisma generate && node --experimental-transform-types src/index.js",
+    "build": "npx prisma generate",
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push",
     "prisma:studio": "npx prisma studio",

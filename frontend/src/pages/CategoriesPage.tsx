@@ -94,7 +94,7 @@ export const CategoriesPage: React.FC = () => {
 
       try {
         setIsActionLoading(true)
-        const response = await categoryApi.delete(category.id)
+        const response = await categoryApi.delete(categoryToDelete.id)
         if (response.success) {
           showToast("Category deleted successfully", "success")
           fetchCategories()
