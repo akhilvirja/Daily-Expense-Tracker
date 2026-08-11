@@ -81,7 +81,7 @@ export const loginUser = asyncHandler(async (req, res) => {
             token: generateToken(user.id),
         }, STATUS_MESSAGES.SUCCESS.LOGGED_IN);
     } else {
-        return sendError(res, STATUS_CODES.UNAUTHORIZED, STATUS_MESSAGES.ERROR.UNAUTHORIZED, [{ field: 'auth', message: 'Invalid email or password' }]);
+        return sendError(res, STATUS_CODES.UNAUTHORIZED, 'Invalid email or password');
     }
 });
 
@@ -97,4 +97,55 @@ export const getMe = asyncHandler(async (req, res) => {
         fullName: req.user.fullName,
         email: req.user.email,
     }, STATUS_MESSAGES.SUCCESS.FETCHED);
+});
+
+/**
+ * @desc    Update current user profile
+ * @route   PUT /api/v1/auth/me
+ * @access  Private
+ */
+export const updateProfile = asyncHandler(async (req, res) => {
+    const { fullName } = req.body;
+    
+    // req.user is set by authMiddleware
+    const updatedUser = await prisma.user.update({
+        where: { id: req.user.id },
+        data: { fullName },
+    });
+
+    return sendSuccess(res, STATUS_CODES.OK, {
+        id: updatedUser.id,
+        fullName: updatedUser.fullName,
+        email: updatedUser.email,
+    }, STATUS_MESSAGES.SUCCESS.UPDATED);
+});
+
+/**
+ * @desc    Update current user password
+ * @route   PUT /api/v1/auth/me/password
+ * @access  Private
+ */
+export const updatePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    
+    // Find user to get current password hash
+    const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+    });
+
+    if (!user || !(await bcrypt.compare(currentPassword, user.passwordHash))) {
+        return sendError(res, STATUS_CODES.UNAUTHORIZED, 'Invalid current password', [{ field: 'currentPassword', message: 'Current password is incorrect' }]);
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    await prisma.user.update({
+        where: { id: req.user.id },
+        data: { passwordHash: newPasswordHash },
+    });
+
+    return sendSuccess(res, STATUS_CODES.OK, null, 'Password updated successfully');
 });

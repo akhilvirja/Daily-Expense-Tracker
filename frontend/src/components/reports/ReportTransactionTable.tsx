@@ -89,12 +89,6 @@ const ReportTransactionTable: React.FC<ReportTransactionTableProps> = ({
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-1">Detailed view for selected period</p>
         </div>
         <div className="flex items-center gap-2">
-           <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">
-             <LayoutList size={20} />
-           </button>
-           <button className="p-2 text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors mr-2">
-             <ArrowDownUp size={20} />
-           </button>
            <div className="flex items-center gap-2 border-l border-outline-variant pl-4">
              <button 
                 onClick={() => setPage(p => Math.max(1, p - 1))}
@@ -114,13 +108,13 @@ const ReportTransactionTable: React.FC<ReportTransactionTableProps> = ({
            </div>
         </div>
       </div>
-      <div className="flex-1 overflow-auto min-h-[300px]">
+      <div className="flex-1 overflow-auto min-h-[300px] flex flex-col relative">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : transactions.length === 0 ? (
-           <div className="flex items-center justify-center h-full text-on-surface-variant">
+           <div className="absolute inset-0 flex items-center justify-center text-on-surface-variant">
              No transactions found for these filters.
            </div>
         ) : (
