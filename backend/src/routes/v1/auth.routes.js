@@ -1,14 +1,16 @@
 import { Router } from 'express';
-import { registerUser, loginUser, getMe, updateProfile, updatePassword } from '../../controllers/authController.js';
+import { registerUser, loginUser, getMe, updateProfile, updatePassword, forgotPassword, resetPassword } from '../../controllers/authController.js';
 import { authenticate } from '../../middleware/authMiddleware.js';
 import { validate } from '../../middleware/validate.js';
-import { registerSchema, loginSchema, updateProfileSchema, updatePasswordSchema } from '../../validations/auth.validation.js';
+import { registerSchema, loginSchema, updateProfileSchema, updatePasswordSchema, forgotPasswordSchema, resetPasswordSchema } from '../../validations/auth.validation.js';
 
 const router = Router();
 
 // Public routes
 router.post('/register', validate(registerSchema), registerUser);
 router.post('/login', validate(loginSchema), loginUser);
+router.post('/forgot-password', validate(forgotPasswordSchema), forgotPassword);
+router.post('/reset-password/:token', validate(resetPasswordSchema), resetPassword);
 
 // Private routes
 router.get('/me', authenticate, getMe);

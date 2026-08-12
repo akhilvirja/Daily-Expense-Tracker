@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { transactionApi } from '../../api/transactionApi';
 import type { Transaction } from '../../types';
-import { ChevronLeft, ChevronRight, LayoutList, ArrowDownUp } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ReportTransactionTableProps {
   startDate: string;

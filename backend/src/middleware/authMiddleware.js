@@ -17,6 +17,10 @@ export const authenticate = async (req, res, next) => {
             // Verify token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+            if (!decoded || !decoded.id) {
+                return sendError(res, STATUS_CODES.UNAUTHORIZED, STATUS_MESSAGES.ERROR.UNAUTHORIZED, [{ field: 'auth', message: 'Invalid token payload' }]);
+            }
+
             // Fetch user from db
             const user = await prisma.user.findUnique({
                 where: { id: decoded.id },

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/authApi';
 import Toast from '../components/ui/Toast';
@@ -97,9 +97,9 @@ export const LoginPage: React.FC = () => {
                                 <label className="block font-label-caps text-label-caps text-on-surface-variant" htmlFor="password">
                                     Password
                                 </label>
-                                <a className="font-body-sm text-body-sm text-primary hover:text-primary-fixed-dim transition-colors" href="#">
+                                <Link className="font-body-sm text-body-sm text-primary hover:text-primary-fixed-dim transition-colors" to="/forgot-password">
                                     Forgot Password?
-                                </a>
+                                </Link>
                             </div>
                             <div className="relative">
                                 <input
