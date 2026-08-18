@@ -24,6 +24,7 @@ export const sendEmail = async ({ to, subject, html }) => {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS,
             },
+            family: 4,
         });
     } else {
         // Fallback to ethereal for testing locally
@@ -36,6 +37,7 @@ export const sendEmail = async ({ to, subject, html }) => {
                 user: testAccount.user,
                 pass: testAccount.pass,
             },
+            family: 4,
         });
         console.log('No SMTP credentials found. Using Ethereal test account.');
     }
