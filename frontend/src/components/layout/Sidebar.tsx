@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { NavLink, useLocation } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import ConfirmModal from "../ui/ConfirmModal"
+import { ProfileModal } from "../auth/ProfileModal"
 import {
   LayoutDashboard,
   Wallet,
@@ -12,7 +13,8 @@ import {
   BarChart2,
   WalletCards,
   X,
-  LogOut
+  LogOut,
+  UserCircle
 } from "lucide-react"
 
 interface NavItem {
@@ -41,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { logout } = useAuth()
 
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
   const handleSignOutConfirm = () => {
     logout()
@@ -101,7 +104,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {navItems.map(renderNavLink)}
       </ul>
 
-      <div className="mt-auto pt-4">
+      <div className="mt-auto pt-4 flex flex-col gap-1">
+        <button
+          onClick={() => setIsProfileModalOpen(true)}
+          className="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all font-title-md text-title-md"
+        >
+          <UserCircle size={20} />
+          Edit Profile
+        </button>
         <button
           onClick={() => setIsSignOutModalOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl transition-all font-title-md text-title-md"
@@ -117,6 +127,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         confirmText="Sign Out"
         onConfirm={handleSignOutConfirm}
         onCancel={() => setIsSignOutModalOpen(false)}
+      />
+      <ProfileModal 
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
       />
     </nav>
   )

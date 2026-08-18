@@ -16,4 +16,24 @@ export const authApi = {
         const response = await axiosInstance.get('/auth/me');
         return response.data;
     },
+
+    updateProfile: async (data: { fullName: string }): Promise<ApiResponse<{ id: string; fullName: string; email: string }>> => {
+        const response = await axiosInstance.put('/auth/me', data);
+        return response.data;
+    },
+
+    updatePassword: async (data: any): Promise<ApiResponse<null>> => {
+        const response = await axiosInstance.put('/auth/me/password', data);
+        return response.data;
+    },
+
+    forgotPassword: async (email: string): Promise<ApiResponse<null>> => {
+        const response = await axiosInstance.post('/auth/forgot-password', { email });
+        return response.data;
+    },
+
+    resetPassword: async (token: string, password: string): Promise<ApiResponse<null>> => {
+        const response = await axiosInstance.post(`/auth/reset-password/${token}`, { password });
+        return response.data;
+    },
 };

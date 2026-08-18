@@ -13,9 +13,11 @@ model User {
   email        String        @unique @db.VarChar(255)
   passwordHash String
   isActive     Boolean       @default(true)
-  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
-  updatedAt    DateTime?     @updatedAt @db.Timestamptz(6)
-  deletedAt    DateTime?     @db.Timestamptz(6)
+  createdAt            DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime?     @updatedAt @db.Timestamptz(6)
+  deletedAt            DateTime?     @db.Timestamptz(6)
+  resetPasswordToken   String?       @db.VarChar(255)
+  resetPasswordExpires DateTime?     @db.Timestamptz(6)
   accounts     Account[]
   bills        Bill[]
   categories   Category[]

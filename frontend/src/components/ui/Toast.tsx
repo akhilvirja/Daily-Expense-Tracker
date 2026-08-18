@@ -1,4 +1,5 @@
 import React, { useEffect } from "react"
+import { createPortal } from "react-dom"
 import { CheckCircle, AlertCircle, AlertTriangle, Info, X } from "lucide-react"
 
 export type ToastType = "success" | "error" | "warning" | "info"
@@ -37,7 +38,7 @@ const Toast: React.FC<ToastProps> = ({
   const styles = toastStyles[type]
   const Icon = styles.icon
 
-  return (
+  return createPortal(
     <div
       className={`fixed bottom-4 right-4 z-[100] flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg font-body-lg text-body-lg max-w-[400px] animate-in slide-in-from-bottom-5 fade-in duration-300 ${styles.bg}`}
     >
@@ -50,7 +51,8 @@ const Toast: React.FC<ToastProps> = ({
       >
         <X size={18} />
       </button>
-    </div>
+    </div>,
+    document.body
   )
 }
 
